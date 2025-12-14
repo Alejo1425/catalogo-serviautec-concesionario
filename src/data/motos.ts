@@ -16,7 +16,8 @@ import ntorq125 from '@/assets/motos/ntorq-125.webp';
 import kingGsFull from '@/assets/motos/king-gs-full.webp';
 import agilityFusionNew from '@/assets/motos/agility-fusion-new.webp';
 import twist from '@/assets/motos/agility-fusion.webp';
-import onemp from '@/assets/motos/one-mp.webp';
+import oneMp from '@/assets/motos/one-mp.webp';
+import oneMpTrakku from '@/assets/motos/one-mp-trakku-galeria-01.webp';
 import advanceR125 from '@/assets/motos/advance-r-125.webp';
 import x1Fi125 from '@/assets/motos/x1-fi-125.webp';
 import newLife125 from '@/assets/motos/new-life-new.webp';
@@ -43,7 +44,7 @@ export interface Moto {
   id: string;
   modelo: string;
   marca: 'TVS' | 'Victory' | 'Kymco' | 'Benelli' | 'Ceronte' | 'Zontes';
-  categoria: 'sport' | 'trabajo' | 'automatica' | 'deportiva' | 'todo-terreno' | 'tricargo' | 'alta-gama';
+  categoria: 'sport' | 'trabajo' | 'automatica' | 'semi-automatica' | 'deportiva' | 'todo-terreno' | 'tricargo' | 'alta-gama';
   precio2026: number;
   cuotaInicial: number;
   precioContado: number;
@@ -211,18 +212,17 @@ export const motos: Moto[] = [
   },
   // ELIMINADO: APACHE RTR 160 4V XC FI ABS DUO TONO
   // TVS - AUTOMÁTICAS
-  {
+    {
     id: 'neon-nx-110',
     modelo: 'NEON NX 110',
     marca: 'TVS',
-    categoria: 'automatica',
+    categoria: 'semi-automatica',
     precio2026: 6599999,
     cuotaInicial: 1447500,
     precioContado: 7287499,
     imagen: neoNx110,
     cilindrada: '110cc'
-  },
-  {
+  },{
     id: 'dazz-110',
     modelo: 'DAZZ 110',
     marca: 'TVS',
@@ -416,45 +416,45 @@ export const motos: Moto[] = [
     imagen: agilityFusionNew,
     cilindrada: '125cc'
   },
-  // VICTORY - SEMIAUTOMÁTICAS
+      // VICTORY - SEMIAUTOMÁTICAS
   {
     id: 'one-mp',
     modelo: 'ONE MP',
     marca: 'Victory',
-    categoria: 'trabajo',
+    categoria: 'semi-automatica',
     precio2026: 5549000,
     cuotaInicial: 1254400,
     precioContado: 6148500,
-    imagen: onemp,
+    imagen: oneMp,
     cilindrada: '100cc'
   },
   {
     id: 'one-mp-tk',
     modelo: 'ONE MP TK',
     marca: 'Victory',
-    categoria: 'trabajo',
+    categoria: 'semi-automatica',
     precio2026: 5749000,
     cuotaInicial: 1274400,
     precioContado: 6348500,
-    imagen: onemp,
+    imagen: oneMpTrakku,
     cilindrada: '100cc'
   },
   {
     id: 'one-mp-tk-cbs',
     modelo: 'ONE MP TK CBS',
     marca: 'Victory',
-    categoria: 'trabajo',
+    categoria: 'semi-automatica',
     precio2026: 5749000,
     cuotaInicial: 1274400,
     precioContado: 6348500,
-    imagen: onemp,
+    imagen: oneMpTrakku,
     cilindrada: '100cc'
   },
   {
     id: 'advance-r-125',
     modelo: 'ADVANCE R 125',
     marca: 'Victory',
-    categoria: 'sport',
+    categoria: 'semi-automatica',
     precio2026: 6299000,
     cuotaInicial: 1417400,
     precioContado: 6986500,
@@ -465,7 +465,7 @@ export const motos: Moto[] = [
     id: 'advance-r-125-tk',
     modelo: 'ADVANCE R 125 TK',
     marca: 'Victory',
-    categoria: 'sport',
+    categoria: 'semi-automatica',
     precio2026: 6499000,
     cuotaInicial: 1437400,
     precioContado: 7186500,
@@ -476,7 +476,7 @@ export const motos: Moto[] = [
     id: 'advance-r-125-cbs',
     modelo: 'ADVANCE R 125 CBS',
     marca: 'Victory',
-    categoria: 'sport',
+    categoria: 'semi-automatica',
     precio2026: 6399000,
     cuotaInicial: 1427400,
     precioContado: 7086500,
@@ -487,7 +487,7 @@ export const motos: Moto[] = [
     id: 'advance-r-125-tk-cbs',
     modelo: 'ADVANCE R 125 TK CBS',
     marca: 'Victory',
-    categoria: 'sport',
+    categoria: 'semi-automatica',
     precio2026: 6599000,
     cuotaInicial: 1447400,
     precioContado: 7286500,
@@ -498,7 +498,7 @@ export const motos: Moto[] = [
     id: 'x1-fi-tk',
     modelo: 'X1 FI TK',
     marca: 'Victory',
-    categoria: 'sport',
+    categoria: 'semi-automatica',
     precio2026: 7699000,
     cuotaInicial: 1705900,
     precioContado: 8535000,
@@ -509,7 +509,7 @@ export const motos: Moto[] = [
     id: 'x1-fi-tk-cbs',
     modelo: 'X1 FI TK CBS',
     marca: 'Victory',
-    categoria: 'sport',
+    categoria: 'semi-automatica',
     precio2026: 7849000,
     cuotaInicial: 1720900,
     precioContado: 8685000,
@@ -982,8 +982,17 @@ export const categorias = [
   { id: 'trabajo', nombre: 'Trabajo' },
   { id: 'sport', nombre: 'Sport' },
   { id: 'automatica', nombre: 'Automáticas' },
+  { id: 'semi-automatica', nombre: 'Semi Automáticas' },
   { id: 'deportiva', nombre: 'Deportivas' },
   { id: 'todo-terreno', nombre: 'Todo Terreno' },
   { id: 'tricargo', nombre: 'Tricargo' },
   { id: 'alta-gama', nombre: 'Alta Gama' },
 ] as const;
+
+
+
+
+
+
+
+

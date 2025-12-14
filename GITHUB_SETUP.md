@@ -3,7 +3,7 @@
 ## Paso 1: Crear Repositorio en GitHub
 
 1. Ve a https://github.com/new
-2. Nombre del repositorio: `auteco-bike-buddy`
+2. Nombre del repositorio: `catalogo-serviautec-concesionario`
 3. Descripción: "Catálogo Multi-tenant de Motos Auteco"
 4. Visibilidad: **Private** (recomendado) o Public
 5. **NO** marcar "Initialize with README" (ya tenemos uno)
@@ -15,7 +15,7 @@ Abre tu terminal en el proyecto y ejecuta:
 
 ```bash
 # Navegar al proyecto
-cd "c:\Users\dcarv\OneDrive\Escritorio\catalogo\auteco-bike-buddy-main"
+cd "c:\Users\dcarv\OneDrive\Escritorio\catalogo\catalogo-serviautec-concesionario-main"
 
 # Inicializar repositorio (si no está inicializado)
 git init
@@ -45,7 +45,7 @@ Después de crear el repositorio en GitHub, verás instrucciones. Usa estas:
 
 ```bash
 # Agregar repositorio remoto (reemplaza TU_USUARIO)
-git remote add origin https://github.com/TU_USUARIO/auteco-bike-buddy.git
+git remote add origin https://github.com/TU_USUARIO/catalogo-serviautec-concesionario.git
 
 # O si usas SSH:
 # git remote add origin git@github.com:TU_USUARIO/auteco-bike-buddy.git
@@ -58,7 +58,7 @@ git push -u origin main
 
 ## Paso 4: Verificar en GitHub
 
-Ve a `https://github.com/TU_USUARIO/auteco-bike-buddy` y verifica que:
+Ve a `https://github.com/TU_USUARIO/catalogo-serviautec-concesionario` y verifica que:
 - ✅ Todos los archivos están subidos
 - ✅ README.md se muestra correctamente
 - ✅ .gitignore está funcionando (no debe haber carpeta node_modules)
@@ -208,7 +208,7 @@ git push
 
 1. **Actualizar deploy.sh** con la URL correcta:
    ```bash
-   REPO_URL="https://github.com/TU_USUARIO/auteco-bike-buddy.git"
+   REPO_URL="https://github.com/TU_USUARIO/catalogo-serviautec-concesionario.git"
    ```
 
 2. **Probar despliegue**:
