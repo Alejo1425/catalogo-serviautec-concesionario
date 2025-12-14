@@ -22,7 +22,7 @@ Sistema de catálogo de motos Auteco con soporte multi-tenant para múltiples as
 
 ```bash
 # Clonar repositorio
-git clone https://github.com/TU_USUARIO/auteco-bike-buddy.git
+git clone https://github.com/TU_USUARIO/catalogo-serviautec-concesionario.git
 cd auteco-bike-buddy
 
 # Instalar dependencias
@@ -52,7 +52,6 @@ chmod +x deploy.sh
 
 ```bash
 # En tu servidor (xx.xx.xx.xxx)
-cd /opt
 git clone https://github.com/TU_USUARIO/auteco-bike-buddy.git
 cd auteco-bike-buddy
 
@@ -73,7 +72,7 @@ docker-compose logs -f
 
 ```bash
 chmod +x add-asesor.sh
-./add-asesor.sh pedro "Pedro Ramírez" pedro@autorunai.tech "+57 300 345 6789" "573003456789"
+./add-asesor.sh pedro "Pedro Ramírez" pedro@tuUrl.com "+57 300 345 6789" "573003456789"
 ```
 
 ### Método 2: Manual
@@ -84,10 +83,10 @@ chmod +x add-asesor.sh
 pedro: {
   id: 'pedro',
   nombre: 'Pedro Ramírez',
-  email: 'pedro@autorunai.tech',
+  email: 'pedro@tuUrl.com',
   telefono: '+57 300 345 6789',
   whatsapp: '573003456789',
-  urlSubdominio: 'pedro.autorunai.tech',
+  urlSubdominio: 'pedro.tuUrl.com',
   colorPrimario: '#1a56db',
   colorSecundario: '#0e7490',
 },
@@ -108,7 +107,7 @@ auteco-pedro:
     - traefik_proxy
   labels:
     - "traefik.enable=true"
-    - "traefik.http.routers.auteco-pedro.rule=Host(`pedro.autorunai.tech`)"
+    - "traefik.http.routers.auteco-pedro.rule=Host(`pedro.tuUrl.com`)"
     - "traefik.http.routers.auteco-pedro.entrypoints=websecure"
     - "traefik.http.routers.auteco-pedro.tls=true"
     - "traefik.http.routers.auteco-pedro.tls.certresolver=letsencrypt"
@@ -116,7 +115,7 @@ auteco-pedro:
 ```
 
 3. **Configurar DNS**:
-   - Crear registro A: `pedro.autorunai.tech` → `xx.xx.xx.xxx`
+   - Crear registro A: `pedro.tuUrl.com` → `xx.xx.xx.xxx`
 
 4. **Desplegar**:
 
@@ -126,9 +125,9 @@ auteco-pedro:
 
 ## 🌐 URLs Disponibles
 
-- **Juan**: https://juan.autorunai.tech
-- **María**: https://maria.autorunai.tech
-- **Default**: https://autorunai.tech
+- **Juan**: https://juan.tuUrl.com
+- **María**: https://maria.tuUrl.com
+- **Default**: https://tuUrl.com
 
 ## 📁 Estructura del Proyecto
 
@@ -246,7 +245,7 @@ npm run lint         # Linter
 
 ## 📄 Licencia
 
-Este proyecto es privado y propiedad de Auteco.
+Este proyecto es privado y propiedad de Serviautec Concesionario Auteco.
 
 ## 👨‍💻 Soporte
 
@@ -256,4 +255,4 @@ Para problemas o preguntas:
 
 ---
 
-Hecho con ❤️ para Auteco
+Hecho para SERVIAUTEC CONCESIONARIO AUTECO
