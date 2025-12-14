@@ -304,9 +304,9 @@ const MotoDetail = () => {
             {/* Contact Section */}
             <Card className="border-green-600/30 bg-green-600/5">
               <CardContent className="p-6 text-center">
-                <p className="text-muted-foreground font-body mb-1">Tu asesora comercial</p>
+                <p className="text-muted-foreground font-body mb-1">Tu asesor comercial</p>
                 <h3 className="font-heading font-bold text-xl text-foreground mb-4">
-                  Yeimy Laverde
+                  Juan Pablo
                 </h3>
                 <Button
                   asChild
@@ -314,7 +314,7 @@ const MotoDetail = () => {
                   className="w-full bg-green-600 hover:bg-green-700 text-white font-heading font-bold text-lg gap-3 py-6"
                 >
                   <a
-                    href={`https://wa.me/573021266110?text=${whatsappMessage}`}
+                    href={`https://wa.me/573114319886?text=${whatsappMessage}`}
                     target="_blank"
                     rel="noopener noreferrer"
                   >

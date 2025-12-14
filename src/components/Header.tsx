@@ -7,12 +7,12 @@ export function Header() {
       <div className="bg-primary text-primary-foreground py-2">
         <div className="container mx-auto px-4 flex justify-between items-center text-sm">
           <span className="font-body">Precios actualizados - Diciembre 2025</span>
-          <a 
-            href="tel:3021266110" 
+          <a
+            href="tel:3114319886"
             className="flex items-center gap-2 hover:opacity-80 transition-opacity font-heading font-semibold"
           >
             <Phone className="w-4 h-4" />
-            302 126 6110
+            311 431 9886
           </a>
         </div>
       </div>

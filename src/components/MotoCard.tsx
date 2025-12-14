@@ -94,7 +94,7 @@ export function MotoCard({ moto, index }: MotoCardProps) {
           className="w-full mt-4 bg-green-600 hover:bg-green-700 text-white font-heading font-semibold gap-2"
         >
           <a
-            href={`https://wa.me/573021266110?text=${encodeURIComponent(`Hola Yeimy! Estoy interesado en la ${moto.marca} ${moto.modelo}. ¿Me pueden dar más información?`)}`}
+            href={`https://wa.me/573114319886?text=${encodeURIComponent(`Hola Juan Pablo! Estoy interesado en la ${moto.marca} ${moto.modelo}. ¿Me pueden dar más información?`)}`}
             target="_blank"
             rel="noopener noreferrer"
           >
