@@ -35,7 +35,7 @@ services:
     labels:
       - "traefik.enable=true"
       - "traefik.docker.network=traefik_proxy"
-      - "traefik.http.routers.auteco-default.rule=Host(`autorunai.tech`, `www.autorunai.tech`)"
+      - "traefik.http.routers.auteco-default.rule=Host(`autorunai.tech`) || Host(`www.autorunai.tech`)"
       - "traefik.http.routers.auteco-default.entrypoints=websecure"
       - "traefik.http.routers.auteco-default.tls=true"
       - "traefik.http.routers.auteco-default.tls.certresolver=mytlschallenge"
