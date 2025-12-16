@@ -7,9 +7,25 @@ Sistema de catálogo de motos Auteco con soporte multi-tenant para múltiples as
 - ✅ **Multi-tenant** - Un código, múltiples asesores
 - ✅ **Subdominios personalizados** - Cada asesor tiene su URL única
 - ✅ **Docker + Traefik** - Despliegue profesional con HTTPS automático
+- ✅ **CI/CD con GitHub Actions** - Deploy automático a staging y producción
+- ✅ **Git Flow** - Workflow profesional con ramas develop y master
+- ✅ **Entornos separados** - Staging para pruebas, Production para clientes
 - ✅ **React + TypeScript + Vite** - Stack moderno y rápido
 - ✅ **TailwindCSS + shadcn/ui** - UI componentes profesionales
 - ✅ **Fácil de escalar** - Agregar nuevos asesores en minutos
+
+## 🌐 Entornos
+
+| Entorno | Rama Git | URLs |
+|---------|----------|------|
+| **Producción** | `master` | [juan.autorunai.tech](https://juan.autorunai.tech)<br>[autorunai.tech](https://autorunai.tech) |
+| **Staging** | `develop` | [staging-juan.autorunai.tech](https://staging-juan.autorunai.tech)<br>[staging.autorunai.tech](https://staging.autorunai.tech) |
+
+## 📚 Documentación
+
+- **[WORKFLOW.md](./WORKFLOW.md)** - Guía completa del flujo de trabajo Git y CI/CD
+- **[GITHUB_SECRETS_SETUP.md](./GITHUB_SECRETS_SETUP.md)** - Cómo configurar los secrets de GitHub
+- **[DEPLOYMENT.md](./DEPLOYMENT.md)** - Instrucciones de despliegue manual
 
 ## 📋 Requisitos
 

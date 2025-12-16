@@ -1,7 +1,11 @@
 version: '3.8'
 
 services:
-  # Instancia para Juan (Asesor real)
+  # ========================================
+  # PRODUCCIÓN (rama master)
+  # ========================================
+
+  # Instancia para Juan (Producción)
   auteco-juan:
     build:
       context: .
@@ -21,7 +25,7 @@ services:
       - "traefik.http.routers.auteco-juan.tls.certresolver=mytlschallenge"
       - "traefik.http.services.auteco-juan.loadbalancer.server.port=80"
 
-  # Instancia por defecto
+  # Instancia por defecto (Producción)
   auteco-default:
     build:
       context: .
@@ -40,6 +44,115 @@ services:
       - "traefik.http.routers.auteco-default.tls=true"
       - "traefik.http.routers.auteco-default.tls.certresolver=mytlschallenge"
       - "traefik.http.services.auteco-default.loadbalancer.server.port=80"
+
+  # ========================================
+  # STAGING (rama develop)
+  # Solo 1 instancia para pruebas
+  # ========================================
+
+  # Instancia de staging
+  auteco-staging:
+    build:
+      context: .
+      dockerfile: Dockerfile
+      args:
+        VITE_ASESOR_ID: staging
+    container_name: auteco-staging
+    restart: unless-stopped
+    networks:
+      - traefik_proxy
+    labels:
+      - "traefik.enable=true"
+      - "traefik.docker.network=traefik_proxy"
+      - "traefik.http.routers.auteco-staging.rule=Host(`staging.autorunai.tech`)"
+      - "traefik.http.routers.auteco-staging.entrypoints=websecure"
+      - "traefik.http.routers.auteco-staging.tls=true"
+      - "traefik.http.routers.auteco-staging.tls.certresolver=mytlschallenge"
+      - "traefik.http.services.auteco-staging.loadbalancer.server.port=80"
+
+  # ========================================
+  # ASESORES ADICIONALES (Producción)
+  # ========================================
+
+  # Alejandra González
+  auteco-alejandra:
+    build:
+      context: .
+      dockerfile: Dockerfile
+      args:
+        VITE_ASESOR_ID: alejandra
+    container_name: auteco-alejandra
+    restart: unless-stopped
+    networks:
+      - traefik_proxy
+    labels:
+      - "traefik.enable=true"
+      - "traefik.docker.network=traefik_proxy"
+      - "traefik.http.routers.auteco-alejandra.rule=Host(`alejandra.autorunai.tech`)"
+      - "traefik.http.routers.auteco-alejandra.entrypoints=websecure"
+      - "traefik.http.routers.auteco-alejandra.tls=true"
+      - "traefik.http.routers.auteco-alejandra.tls.certresolver=mytlschallenge"
+      - "traefik.http.services.auteco-alejandra.loadbalancer.server.port=80"
+
+  # Miguel Weter
+  auteco-miguel:
+    build:
+      context: .
+      dockerfile: Dockerfile
+      args:
+        VITE_ASESOR_ID: miguel
+    container_name: auteco-miguel
+    restart: unless-stopped
+    networks:
+      - traefik_proxy
+    labels:
+      - "traefik.enable=true"
+      - "traefik.docker.network=traefik_proxy"
+      - "traefik.http.routers.auteco-miguel.rule=Host(`miguel.autorunai.tech`)"
+      - "traefik.http.routers.auteco-miguel.entrypoints=websecure"
+      - "traefik.http.routers.auteco-miguel.tls=true"
+      - "traefik.http.routers.auteco-miguel.tls.certresolver=mytlschallenge"
+      - "traefik.http.services.auteco-miguel.loadbalancer.server.port=80"
+
+  # Lorena Polo
+  auteco-lorena:
+    build:
+      context: .
+      dockerfile: Dockerfile
+      args:
+        VITE_ASESOR_ID: lorena
+    container_name: auteco-lorena
+    restart: unless-stopped
+    networks:
+      - traefik_proxy
+    labels:
+      - "traefik.enable=true"
+      - "traefik.docker.network=traefik_proxy"
+      - "traefik.http.routers.auteco-lorena.rule=Host(`lorena.autorunai.tech`)"
+      - "traefik.http.routers.auteco-lorena.entrypoints=websecure"
+      - "traefik.http.routers.auteco-lorena.tls=true"
+      - "traefik.http.routers.auteco-lorena.tls.certresolver=mytlschallenge"
+      - "traefik.http.services.auteco-lorena.loadbalancer.server.port=80"
+
+  # Nathalia
+  auteco-nathalia:
+    build:
+      context: .
+      dockerfile: Dockerfile
+      args:
+        VITE_ASESOR_ID: nathalia
+    container_name: auteco-nathalia
+    restart: unless-stopped
+    networks:
+      - traefik_proxy
+    labels:
+      - "traefik.enable=true"
+      - "traefik.docker.network=traefik_proxy"
+      - "traefik.http.routers.auteco-nathalia.rule=Host(`nathalia.autorunai.tech`)"
+      - "traefik.http.routers.auteco-nathalia.entrypoints=websecure"
+      - "traefik.http.routers.auteco-nathalia.tls=true"
+      - "traefik.http.routers.auteco-nathalia.tls.certresolver=mytlschallenge"
+      - "traefik.http.services.auteco-nathalia.loadbalancer.server.port=80"
 
 networks:
   traefik_proxy:

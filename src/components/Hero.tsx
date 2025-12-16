@@ -1,6 +1,7 @@
 import { Search, MessageCircle } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
+import { useAsesorConfig } from "@/config/asesor";
 
 interface HeroProps {
   searchQuery: string;
@@ -9,6 +10,7 @@ interface HeroProps {
 }
 
 export function Hero({ searchQuery, onSearchChange, totalMotos }: HeroProps) {
+  const asesor = useAsesorConfig();
   return (
     <section className="relative bg-gradient-to-br from-secondary via-secondary to-auteco-dark py-16 overflow-hidden">
       {/* Background pattern */}
@@ -27,12 +29,12 @@ export function Hero({ searchQuery, onSearchChange, totalMotos }: HeroProps) {
             Explora nuestro catálogo de {totalMotos} referencias con precios y cuotas iniciales actualizadas
           </p>
 
-          {/* Juan Pablo Banner */}
+          {/* Asesor Banner */}
           <div className="bg-gradient-to-r from-green-600 to-green-700 rounded-2xl p-6 mb-8 animate-fade-in shadow-lg shadow-green-600/20">
             <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
               <div className="text-white text-center sm:text-left">
                 <p className="text-green-100 text-sm font-body">Tu asesor comercial</p>
-                <h3 className="font-heading font-bold text-2xl md:text-3xl">Juan Pablo</h3>
+                <h3 className="font-heading font-bold text-2xl md:text-3xl">{asesor.nombre}</h3>
                 <p className="text-green-100 text-sm font-body mt-1">¡Te atenderé con gusto!</p>
               </div>
               <Button
@@ -41,7 +43,7 @@ export function Hero({ searchQuery, onSearchChange, totalMotos }: HeroProps) {
                 className="bg-white hover:bg-green-50 text-green-700 font-heading font-bold gap-2 shadow-md"
               >
                 <a
-                  href="https://wa.me/573114319886?text=Hola%20Juan%20Pablo!%20Quiero%20información%20sobre%20las%20motos."
+                  href={`https://wa.me/${asesor.whatsapp}?text=Hola%20${encodeURIComponent(asesor.nombre)}!%20Quiero%20información%20sobre%20las%20motos.`}
                   target="_blank"
                   rel="noopener noreferrer"
                 >

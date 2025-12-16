@@ -30,9 +30,9 @@ import mrx200Fox from '@/assets/motos/mrx-200-fox.webp';
 import mrxArizona from '@/assets/motos/mrx-arizona.webp';
 import mrxArizonaFox from '@/assets/motos/mrx-arizona-fox.webp';
 import mrxArizonaXplore from '@/assets/motos/mrx-arizona-xplore.webp';
-import nitro125 from '@/assets/motos/nitro-125.webp';
-import switch125 from '@/assets/motos/switch-125.webp';
-import combat100 from '@/assets/motos/combat-100.webp';
+//import nitro125 from '@/assets/motos/nitro-125.webp';
+//import switch125 from '@/assets/motos/switch-125.webp';
+//import combat100 from '@/assets/motos/combat-100.webp';
 import hunter150 from '@/assets/motos/hunter-150.webp';
 import betAbs from '@/assets/motos/bet-abs.webp';
 import venom18 from '@/assets/motos/venom-18.webp';
@@ -87,7 +87,7 @@ export const motos: Moto[] = [
     imagen: sport100Els,
     cilindrada: '100cc'
   },
-  {
+  /*{
     id: 'sport-100-els-cargo',
     modelo: 'SPORT 100 ELS CARGO',
     marca: 'TVS',
@@ -97,7 +97,7 @@ export const motos: Moto[] = [
     precioContado: 6499499,
     imagen: sport100Els,
     cilindrada: '100cc'
-  },
+  },*/
   {
     id: 'sport-100-els-spoke-tk',
     modelo: 'SPORT 100 ELS SPOKE TK',
@@ -154,7 +154,7 @@ export const motos: Moto[] = [
     imagen: raider125Fi,
     cilindrada: '125cc'
   },
-  {
+  /*{
     id: 'stryker-125-indo',
     modelo: 'STRYKER 125 INDO',
     marca: 'TVS',
@@ -164,7 +164,7 @@ export const motos: Moto[] = [
     precioContado: 7887499,
     imagen: raider125,
     cilindrada: '125cc'
-  },
+  },*/
   // TVS - APACHE 160
   {
     id: 'apache-rtr-160-carb',
@@ -361,7 +361,7 @@ export const motos: Moto[] = [
     cilindrada: '200cc'
   },
   // KYMCO
-  {
+  /*{
     id: 'twist',
     modelo: 'TWIST',
     marca: 'Kymco',
@@ -371,7 +371,7 @@ export const motos: Moto[] = [
     precioContado: 8086500,
     imagen: twist,
     cilindrada: '125cc'
-  },
+  },*/
   {
     id: 'agility-fusion',
     modelo: 'AGILITY FUSION',
@@ -750,7 +750,7 @@ export const motos: Moto[] = [
     cilindrada: '200cc'
   },
   // VICTORY - URBANAS
-  {
+  /*{
     id: 'nitro-125',
     modelo: 'NITRO 125 FACELIFT',
     marca: 'Victory',
@@ -859,7 +859,7 @@ export const motos: Moto[] = [
     precioContado: 6586500,
     imagen: combat100,
     cilindrada: '125cc'
-  },
+  },*/
   // VICTORY - DEPORTIVAS
   {
     id: 'hunter-150-fi',
