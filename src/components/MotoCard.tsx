@@ -4,6 +4,7 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { MessageCircle } from "lucide-react";
 import type { Moto } from "@/data/motos";
+import { useAsesorConfig } from "@/config/asesor";
 
 interface MotoCardProps {
   moto: Moto;
@@ -39,6 +40,8 @@ const getMarcaColor = (marca: string): string => {
 };
 
 export function MotoCard({ moto, index }: MotoCardProps) {
+  const asesor = useAsesorConfig();
+
   return (
     <Card 
       className="group overflow-hidden border-border/50 bg-card hover:border-primary/30 transition-all duration-300 hover:shadow-xl hover:shadow-primary/5 animate-fade-in"
@@ -94,7 +97,7 @@ export function MotoCard({ moto, index }: MotoCardProps) {
           className="w-full mt-4 bg-green-600 hover:bg-green-700 text-white font-heading font-semibold gap-2"
         >
           <a
-            href={`https://wa.me/573114319886?text=${encodeURIComponent(`Hola Juan Pablo! Estoy interesado en la ${moto.marca} ${moto.modelo}. ¿Me pueden dar más información?`)}`}
+            href={`https://wa.me/${asesor.whatsapp}?text=${encodeURIComponent(`Hola ${asesor.nombre}! Estoy interesado en la ${moto.marca} ${moto.modelo}. ¿Me pueden dar más información?`)}`}
             target="_blank"
             rel="noopener noreferrer"
           >

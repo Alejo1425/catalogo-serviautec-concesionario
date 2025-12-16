@@ -6,6 +6,7 @@ import { Badge } from "@/components/ui/badge";
 import { Card, CardContent } from "@/components/ui/card";
 import { ArrowLeft, MessageCircle, Fuel, Gauge, Settings, Cog } from "lucide-react";
 import { motos } from "@/data/motos";
+import { useAsesorConfig } from "@/config/asesor";
 
 const formatPrice = (price: number): string => {
   return new Intl.NumberFormat('es-CO', {
@@ -143,6 +144,7 @@ const getDescripcion = (moto: typeof motos[0]): string => {
 const MotoDetail = () => {
   const { id } = useParams<{ id: string }>();
   const moto = motos.find(m => m.id === id);
+  const asesor = useAsesorConfig();
 
   if (!moto) {
     return (
@@ -165,7 +167,7 @@ const MotoDetail = () => {
   }
 
   const whatsappMessage = encodeURIComponent(
-    `Hola! Estoy interesado en la ${moto.marca} ${moto.modelo}. ¿Me pueden dar más información sobre precios y disponibilidad?`
+    `Hola ${asesor.nombre}! Estoy interesado en la ${moto.marca} ${moto.modelo}. ¿Me pueden dar más información sobre precios y disponibilidad?`
   );
 
   return (
@@ -306,7 +308,7 @@ const MotoDetail = () => {
               <CardContent className="p-6 text-center">
                 <p className="text-muted-foreground font-body mb-1">Tu asesor comercial</p>
                 <h3 className="font-heading font-bold text-xl text-foreground mb-4">
-                  Juan Pablo
+                  {asesor.nombre}
                 </h3>
                 <Button
                   asChild
@@ -314,7 +316,7 @@ const MotoDetail = () => {
                   className="w-full bg-green-600 hover:bg-green-700 text-white font-heading font-bold text-lg gap-3 py-6"
                 >
                   <a
-                    href={`https://wa.me/573114319886?text=${whatsappMessage}`}
+                    href={`https://wa.me/${asesor.whatsapp}?text=${whatsappMessage}`}
                     target="_blank"
                     rel="noopener noreferrer"
                   >
