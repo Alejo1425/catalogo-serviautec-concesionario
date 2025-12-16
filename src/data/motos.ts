@@ -750,7 +750,7 @@ export const motos: Moto[] = [
     cilindrada: '200cc'
   },
   // VICTORY - URBANAS
-  {
+  /*{
     id: 'nitro-125',
     modelo: 'NITRO 125 FACELIFT',
     marca: 'Victory',
@@ -859,7 +859,7 @@ export const motos: Moto[] = [
     precioContado: 6586500,
     imagen: combat100,
     cilindrada: '125cc'
-  },
+  },*/
   // VICTORY - DEPORTIVAS
   {
     id: 'hunter-150-fi',
