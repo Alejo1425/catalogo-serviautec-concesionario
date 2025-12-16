@@ -21,7 +21,7 @@ export interface AsesorConfig {
 const asesoresConfig: Record<string, AsesorConfig> = {
   juan: {
     id: 'juan',
-    nombre: 'Juan Castaño',
+    nombre: 'Juan Pablo',
     email: 'juan@autorunai.tech',
     telefono: '+57 304 436 4455',
     whatsapp: '573044364455',
@@ -68,6 +68,16 @@ const asesoresConfig: Record<string, AsesorConfig> = {
     urlSubdominio: 'nathalia.autorunai.tech',
     colorPrimario: '#ea580c',
     colorSecundario: '#c2410c',
+  },
+  staging: {
+    id: 'staging',
+    nombre: 'Ambiente de Pruebas',
+    email: 'info@autorunai.tech',
+    telefono: '+57 304 436 4455',
+    whatsapp: '573044364455',
+    urlSubdominio: 'staging.autorunai.tech',
+    colorPrimario: '#f59e0b',
+    colorSecundario: '#d97706',
   },
   default: {
     id: 'default',
