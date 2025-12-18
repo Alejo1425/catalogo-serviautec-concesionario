@@ -62,8 +62,15 @@ export interface Asesor {
   Email: string | null;
 
   // ============================================
-  // CAMPOS NUEVOS (que vamos a agregar en NocoDB)
+  // CAMPOS ADICIONALES
   // ============================================
+
+  /**
+   * Si el asesor está activo
+   * 1 = activo, 0 = inactivo
+   * Solo los asesores activos aparecen en el catálogo
+   */
+  Activo?: number;
 
   /**
    * Slug único para la URL
@@ -78,47 +85,44 @@ export interface Asesor {
    */
   slug?: string;
 
+  // 🎓 NOTA: Los siguientes campos están planeados pero aún no existen en NocoDB
+  // Descomenta cuando los agregues a tu base de datos:
+
   /**
    * Número de WhatsApp (con código de país)
    * Ejemplo: "573177352000"
    */
-  whatsapp?: string;
+  // whatsapp?: string;
 
   /**
    * Color primario del tema del asesor (hexadecimal)
    * Ejemplo: "#db2777"
    */
-  color_primario?: string;
+  // color_primario?: string;
 
   /**
    * Color secundario del tema del asesor
    * Ejemplo: "#be185d"
    */
-  color_secundario?: string;
-
-  /**
-   * Si el asesor está activo
-   * Solo los asesores activos aparecen en el catálogo
-   */
-  activo?: boolean;
+  // color_secundario?: string;
 
   /**
    * ID del inbox en Chatwoot
    * Para crear conversaciones automáticamente
    */
-  inbox_chatwoot_id?: string;
+  // inbox_chatwoot_id?: string;
 
   /**
    * Horarios de atención en formato JSON
    * Estructura: { lunes_viernes: {...}, sabado: {...}, domingo: {...} }
    */
-  horario_json?: string;
+  // horario_json?: string;
 
   /**
    * URL del logo personalizado del asesor
    * Si no tiene, usa el logo por defecto
    */
-  logo_url?: string;
+  // logo_url?: string;
 }
 
 /**

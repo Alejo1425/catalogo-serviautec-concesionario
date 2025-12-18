@@ -13,10 +13,15 @@
  * @module pages/TestContext
  */
 
+import { useEffect, useState } from 'react';
 import { useAsesores } from '@/hooks/useAsesores';
 import { useAsesorContext } from '@/contexts';
+import { useChatwoot } from '@/hooks/useChatwoot';
+import { chatwootConfig } from '@/config/env';
+import { AsesorService } from '@/services/nocodb/asesor.service';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { toast } from 'sonner';
 import type { Asesor } from '@/types';
 
 /**
@@ -124,43 +129,20 @@ function DetallesAsesor() {
             </div>
           )}
 
-          {/* WhatsApp */}
-          {asesorActual!.whatsapp && (
+          {/* Estado */}
+          {asesorActual!.Activo !== undefined && (
             <div>
-              <label className="text-sm font-medium text-gray-500">WhatsApp</label>
-              <p className="flex items-center gap-2">
-                💬 {asesorActual!.whatsapp}
-              </p>
-            </div>
-          )}
-
-          {/* Slug */}
-          {asesorActual!.slug && (
-            <div>
-              <label className="text-sm font-medium text-gray-500">URL Personalizada</label>
-              <p className="flex items-center gap-2 text-blue-600">
-                🔗 autorunai.tech/{asesorActual!.slug}
-              </p>
-            </div>
-          )}
-
-          {/* Colores */}
-          {asesorActual!.color_primario && (
-            <div>
-              <label className="text-sm font-medium text-gray-500">Colores de Marca</label>
-              <div className="flex gap-2 mt-1">
-                <div
-                  className="w-12 h-12 rounded border"
-                  style={{ backgroundColor: asesorActual!.color_primario }}
-                  title={`Primario: ${asesorActual!.color_primario}`}
-                />
-                {asesorActual!.color_secundario && (
-                  <div
-                    className="w-12 h-12 rounded border"
-                    style={{ backgroundColor: asesorActual!.color_secundario }}
-                    title={`Secundario: ${asesorActual!.color_secundario}`}
-                  />
-                )}
+              <label className="text-sm font-medium text-gray-500">Estado</label>
+              <div className="mt-1">
+                <span
+                  className={`inline-block px-3 py-1 rounded-full text-sm font-medium ${
+                    asesorActual!.Activo === 1
+                      ? 'bg-green-100 text-green-800'
+                      : 'bg-gray-100 text-gray-800'
+                  }`}
+                >
+                  {asesorActual!.Activo === 1 ? '✓ Activo' : '○ Inactivo'}
+                </span>
               </div>
             </div>
           )}
@@ -169,6 +151,14 @@ function DetallesAsesor() {
           <div>
             <label className="text-sm font-medium text-gray-500">ID</label>
             <p className="text-sm text-gray-600">{asesorActual!.Id}</p>
+          </div>
+
+          {/* Fechas */}
+          <div>
+            <label className="text-sm font-medium text-gray-500">Registrado</label>
+            <p className="text-sm text-gray-600">
+              {new Date(asesorActual!.CreatedAt).toLocaleDateString('es-ES')}
+            </p>
           </div>
 
           {/* Botón limpiar */}
@@ -210,6 +200,177 @@ function HeaderResumen() {
 }
 
 /**
+ * 🎓 COMPONENTE 4: Gestionar Asesores
+ * Este componente permite activar/desactivar asesores
+ */
+function GestionarAsesores() {
+  const [asesores, setAsesores] = useState<Asesor[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [procesando, setProcesando] = useState<number | null>(null);
+
+  // Cargar todos los asesores (activos e inactivos)
+  const cargarAsesores = async () => {
+    try {
+      setLoading(true);
+      const todos = await AsesorService.getAll(); // Sin filtro = todos
+      setAsesores(todos);
+    } catch (error) {
+      console.error('Error al cargar asesores:', error);
+      toast.error('Error al cargar la lista de asesores');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  // Cargar al montar el componente
+  useEffect(() => {
+    cargarAsesores();
+  }, []);
+
+  // Activar asesor
+  const handleActivar = async (id: number, nombre: string) => {
+    try {
+      setProcesando(id);
+      await AsesorService.activar(id);
+      toast.success(`✅ ${nombre} ha sido activado`);
+      await cargarAsesores(); // Recargar lista
+    } catch (error) {
+      console.error('Error al activar:', error);
+      toast.error('Error al activar el asesor');
+    } finally {
+      setProcesando(null);
+    }
+  };
+
+  // Desactivar asesor
+  const handleDesactivar = async (id: number, nombre: string) => {
+    try {
+      setProcesando(id);
+      await AsesorService.desactivar(id);
+      toast.success(`⏸️ ${nombre} ha sido desactivado`);
+      await cargarAsesores(); // Recargar lista
+    } catch (error) {
+      console.error('Error al desactivar:', error);
+      toast.error('Error al desactivar el asesor');
+    } finally {
+      setProcesando(null);
+    }
+  };
+
+  if (loading) {
+    return (
+      <Card>
+        <CardHeader>
+          <CardTitle>⚙️ Gestionar Asesores</CardTitle>
+          <CardDescription>
+            Activa o desactiva asesores desde aquí
+          </CardDescription>
+        </CardHeader>
+        <CardContent>
+          <div className="text-center py-8 text-gray-500">
+            <p>⏳ Cargando asesores...</p>
+          </div>
+        </CardContent>
+      </Card>
+    );
+  }
+
+  return (
+    <Card>
+      <CardHeader>
+        <CardTitle>⚙️ Gestionar Asesores</CardTitle>
+        <CardDescription>
+          Activa o desactiva asesores. Solo los asesores activos aparecerán en la lista de selección.
+        </CardDescription>
+      </CardHeader>
+      <CardContent>
+        <div className="space-y-3">
+          {asesores.map((asesor) => {
+            const estaActivo = asesor.Activo === 1;
+            const estaProcesando = procesando === asesor.Id;
+
+            return (
+              <div
+                key={asesor.Id}
+                className={`flex items-center justify-between p-4 rounded-lg border transition-all ${
+                  estaActivo
+                    ? 'border-green-200 bg-green-50'
+                    : 'border-gray-200 bg-gray-50'
+                }`}
+              >
+                <div className="flex items-center gap-3">
+                  {/* Indicador de estado */}
+                  <div
+                    className={`w-3 h-3 rounded-full ${
+                      estaActivo ? 'bg-green-500' : 'bg-gray-400'
+                    }`}
+                  />
+
+                  {/* Información del asesor */}
+                  <div>
+                    <p className="font-semibold">{asesor.Aseror}</p>
+                    <p className="text-sm text-gray-600">{asesor.Phone}</p>
+                  </div>
+                </div>
+
+                {/* Botón de acción */}
+                <div className="flex items-center gap-3">
+                  {/* Badge de estado */}
+                  <span
+                    className={`text-xs font-medium px-2 py-1 rounded-full ${
+                      estaActivo
+                        ? 'bg-green-100 text-green-800'
+                        : 'bg-gray-100 text-gray-800'
+                    }`}
+                  >
+                    {estaActivo ? '✓ Activo' : '○ Inactivo'}
+                  </span>
+
+                  {/* Botón */}
+                  {estaActivo ? (
+                    <Button
+                      onClick={() => handleDesactivar(asesor.Id, asesor.Aseror)}
+                      disabled={estaProcesando}
+                      variant="outline"
+                      size="sm"
+                      className="border-red-300 text-red-700 hover:bg-red-50"
+                    >
+                      {estaProcesando ? '⏳' : '⏸️'} Desactivar
+                    </Button>
+                  ) : (
+                    <Button
+                      onClick={() => handleActivar(asesor.Id, asesor.Aseror)}
+                      disabled={estaProcesando}
+                      variant="outline"
+                      size="sm"
+                      className="border-green-300 text-green-700 hover:bg-green-50"
+                    >
+                      {estaProcesando ? '⏳' : '▶️'} Activar
+                    </Button>
+                  )}
+                </div>
+              </div>
+            );
+          })}
+        </div>
+
+        {/* Botón para recargar */}
+        <div className="mt-4 pt-4 border-t">
+          <Button
+            onClick={cargarAsesores}
+            variant="outline"
+            size="sm"
+            className="w-full"
+          >
+            🔄 Recargar Lista
+          </Button>
+        </div>
+      </CardContent>
+    </Card>
+  );
+}
+
+/**
  * 🎓 COMPONENTE PRINCIPAL
  * Ensambla todos los componentes
  *
@@ -217,6 +378,20 @@ function HeaderResumen() {
  * Todos obtienen su información del Context directamente
  */
 export default function TestContext() {
+  const { asesorActual } = useAsesorContext();
+  const { isLoaded, isLoading, setAsesor, openChat } = useChatwoot({
+    websiteToken: chatwootConfig.websiteToken,
+    autoLoad: true,
+  });
+
+  // Configurar Chatwoot cuando cambia el asesor
+  useEffect(() => {
+    if (isLoaded && asesorActual) {
+      setAsesor(asesorActual.Aseror, asesorActual.Id);
+      console.log(`✅ Chatwoot configurado para: ${asesorActual.Aseror}`);
+    }
+  }, [isLoaded, asesorActual, setAsesor]);
+
   return (
     <div className="p-8 max-w-7xl mx-auto">
       {/* Header con resumen */}
@@ -231,10 +406,40 @@ export default function TestContext() {
           <li>• <strong>SelectorAsesores</strong>: Lee y modifica el contexto</li>
           <li>• <strong>DetallesAsesor</strong>: Solo lee el contexto</li>
           <li>• <strong>HeaderResumen</strong>: Solo lee el contexto</li>
+          <li>• <strong>Chatwoot</strong>: Se configura automáticamente con el asesor seleccionado</li>
           <li>• Ningún componente recibe props de su padre</li>
           <li>• Todos se sincronizan automáticamente</li>
           <li>• Abre la consola (F12) para ver los logs</li>
         </ul>
+      </div>
+
+      {/* Estado de Chatwoot */}
+      <div className="mt-6 p-4 bg-blue-50 border border-blue-200 rounded-lg">
+        <h3 className="font-bold text-blue-900 mb-2">
+          💬 Integración con Chatwoot
+        </h3>
+        <div className="flex items-center justify-between">
+          <div className="text-sm text-blue-800">
+            <p>
+              Estado: {' '}
+              {isLoading && <span className="font-semibold">⏳ Cargando...</span>}
+              {isLoaded && <span className="font-semibold text-green-700">✅ Conectado</span>}
+              {!isLoading && !isLoaded && <span className="font-semibold text-red-700">❌ No cargado</span>}
+            </p>
+            {asesorActual && isLoaded && (
+              <p className="mt-1">
+                Configurado para: <strong>{asesorActual.Aseror}</strong>
+              </p>
+            )}
+          </div>
+          <Button
+            onClick={openChat}
+            disabled={!isLoaded || !asesorActual}
+            className="bg-blue-600 hover:bg-blue-700"
+          >
+            💬 Abrir Chat
+          </Button>
+        </div>
       </div>
 
       {/* Grid con los componentes */}
@@ -248,6 +453,11 @@ export default function TestContext() {
         <div>
           <DetallesAsesor />
         </div>
+      </div>
+
+      {/* Gestión de asesores */}
+      <div className="mt-6">
+        <GestionarAsesores />
       </div>
 
       {/* Info adicional */}

@@ -4,8 +4,14 @@ import { Footer } from "@/components/Footer";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent } from "@/components/ui/card";
-import { ArrowLeft, MessageCircle, Fuel, Gauge, Settings, Cog } from "lucide-react";
+import { ArrowLeft, MessageCircle, Fuel, Gauge, Settings, Cog, Heart } from "lucide-react";
+import { useChatwoot } from "@/hooks/useChatwoot";
+import { useConversationId } from "@/hooks/useConversationId";
+import { useAsesorContext } from "@/contexts";
+import { chatwootConfig } from "@/config/env";
+import { toast } from "sonner";
 import { motos } from "@/data/motos";
+import { enviarMensajeAConversacion, formatearMensajeMoto } from "@/services/chatwoot-api.service";
 
 const formatPrice = (price: number): string => {
   return new Intl.NumberFormat('es-CO', {
@@ -143,6 +149,79 @@ const getDescripcion = (moto: typeof motos[0]): string => {
 const MotoDetail = () => {
   const { id } = useParams<{ id: string }>();
   const moto = motos.find(m => m.id === id);
+  const { asesorActual } = useAsesorContext();
+  const { conversationId } = useConversationId();
+
+  const { isLoaded, openChatWithMoto } = useChatwoot({
+    websiteToken: chatwootConfig.websiteToken,
+    autoLoad: true,
+  });
+
+  const handleMeInteresa = async () => {
+    if (!moto) return;
+
+    if (!isLoaded) {
+      toast.error('El chat no está disponible en este momento');
+      return;
+    }
+
+    // Si hay un conversation ID, enviar mensaje directo a esa conversación via API
+    if (conversationId) {
+      try {
+        const mensaje = formatearMensajeMoto({
+          marca: moto.marca,
+          modelo: moto.modelo,
+          cuotaInicial: moto.cuotaInicial,
+          precioContado: moto.precioContado,
+          precio2026: moto.precio2026,
+        });
+
+        await enviarMensajeAConversacion(conversationId, mensaje);
+
+        // Mensaje de éxito
+        if (asesorActual) {
+          toast.success(
+            `¡Mensaje enviado a tu conversación con ${asesorActual.Aseror}! 💬`,
+            { duration: 5000 }
+          );
+        } else {
+          toast.success(
+            `¡Mensaje enviado! Tu asesor verá tu interés en la ${moto.marca} ${moto.modelo}`,
+            { duration: 5000 }
+          );
+        }
+      } catch (error) {
+        console.error('Error al enviar mensaje:', error);
+        toast.error('No se pudo enviar el mensaje. Por favor intenta de nuevo.');
+      }
+    } else {
+      // No hay conversation ID - usar el método tradicional con el widget
+      openChatWithMoto(moto.modelo, moto.marca, {
+        marca: moto.marca,
+        modelo: moto.modelo,
+        cuotaInicial: moto.cuotaInicial,
+        precioContado: moto.precioContado,
+        precio2026: moto.precio2026,
+      });
+
+      // Mostrar mensaje de confirmación
+      if (asesorActual) {
+        toast.success(
+          `¡Mensaje enviado! ${asesorActual.Aseror} verá tu interés en la ${moto.marca} ${moto.modelo}`,
+          { duration: 5000 }
+        );
+      } else {
+        toast.success(
+          `${moto.marca} ${moto.modelo} agregada ✓ Abre el chat en la esquina para más información`,
+          { duration: 5000 }
+        );
+      }
+    }
+  };
+
+  // Obtener el teléfono del asesor actual o usar el predeterminado
+  const whatsappNumber = asesorActual?.Phone || '3114319886';
+  const asesorNombre = asesorActual?.Aseror || 'tu asesor';
 
   if (!moto) {
     return (
@@ -165,7 +244,7 @@ const MotoDetail = () => {
   }
 
   const whatsappMessage = encodeURIComponent(
-    `Hola! Estoy interesado en la ${moto.marca} ${moto.modelo}. ¿Me pueden dar más información sobre precios y disponibilidad?`
+    `Hola ${asesorNombre}! Estoy interesado en la ${moto.marca} ${moto.modelo}. ¿Me pueden dar más información sobre precios y disponibilidad?`
   );
 
   return (
@@ -302,26 +381,63 @@ const MotoDetail = () => {
             </Card>
 
             {/* Contact Section */}
-            <Card className="border-green-600/30 bg-green-600/5">
-              <CardContent className="p-6 text-center">
-                <p className="text-muted-foreground font-body mb-1">Tu asesor comercial</p>
-                <h3 className="font-heading font-bold text-xl text-foreground mb-4">
-                  Juan Pablo
-                </h3>
-                <Button
-                  asChild
-                  size="lg"
-                  className="w-full bg-green-600 hover:bg-green-700 text-white font-heading font-bold text-lg gap-3 py-6"
-                >
-                  <a
-                    href={`https://wa.me/573114319886?text=${whatsappMessage}`}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                  >
-                    <MessageCircle className="w-6 h-6" />
-                    Cotizar por WhatsApp
-                  </a>
-                </Button>
+            <Card className="border-primary/30 bg-primary/5">
+              <CardContent className="p-6">
+                <p className="text-muted-foreground font-body mb-1 text-center">
+                  ¿Te interesa esta moto?
+                </p>
+                {asesorActual ? (
+                  <>
+                    <h3 className="font-heading font-bold text-xl text-foreground mb-2 text-center">
+                      {conversationId ? 'Continuar con el proceso' : `Habla con ${asesorActual.Aseror}`}
+                    </h3>
+                    <p className="text-sm text-muted-foreground font-body mb-4 text-center">
+                      {conversationId ? 'Enviar mi interés a la conversación' : 'Continúa la conversación en el chat'}
+                    </p>
+
+                    <Button
+                      onClick={handleMeInteresa}
+                      size="lg"
+                      className="w-full bg-primary hover:bg-primary/90 text-primary-foreground font-heading font-bold text-lg gap-3 py-6"
+                    >
+                      <Heart className="w-6 h-6" />
+                      {conversationId ? 'Me interesa - Continuar con el proceso' : `Me interesa - Hablar con ${asesorActual.Aseror}`}
+                    </Button>
+                  </>
+                ) : (
+                  <>
+                    <h3 className="font-heading font-bold text-xl text-foreground mb-4 text-center">
+                      Habla con tu asesor
+                    </h3>
+
+                    <div className="space-y-3">
+                      <Button
+                        onClick={handleMeInteresa}
+                        size="lg"
+                        variant="outline"
+                        className="w-full border-primary/50 text-primary hover:bg-primary hover:text-primary-foreground font-heading font-bold text-lg gap-3 py-6"
+                      >
+                        <Heart className="w-6 h-6" />
+                        Me interesa esta moto
+                      </Button>
+
+                      <Button
+                        asChild
+                        size="lg"
+                        className="w-full bg-green-600 hover:bg-green-700 text-white font-heading font-bold text-lg gap-3 py-6"
+                      >
+                        <a
+                          href={`https://wa.me/57${whatsappNumber}?text=${whatsappMessage}`}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                        >
+                          <MessageCircle className="w-6 h-6" />
+                          Cotizar por WhatsApp
+                        </a>
+                      </Button>
+                    </div>
+                  </>
+                )}
               </CardContent>
             </Card>
           </div>

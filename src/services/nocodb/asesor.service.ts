@@ -58,7 +58,9 @@ export class AsesorService {
     if (activos) {
       // NocoDB usa sintaxis especial para filtros
       // Formato: (campo,operador,valor)
-      params.where = '(activo,eq,true)';
+      // Nota: La columna se llama "Activo" (con A mayúscula)
+      // y el valor es 1 (no true)
+      params.where = '(Activo,eq,1)';
     }
 
     // Llamar a la API
@@ -221,10 +223,15 @@ export class AsesorService {
    *
    * Usamos soft delete para no perder datos históricos.
    *
+   * 🎓 ESTADOS:
+   * - 0 = Inactivo (temporalmente desactivado)
+   * - 1 = Activo (trabajando actualmente)
+   * - 2 = Retirado (ya no trabaja con nosotros)
+   *
    * @param id - ID del asesor
    */
   static async desactivar(id: number): Promise<void> {
-    await this.update(id, { activo: false });
+    await this.update(id, { Activo: 0 as any });
   }
 
   /**
@@ -233,7 +240,30 @@ export class AsesorService {
    * @param id - ID del asesor
    */
   static async activar(id: number): Promise<void> {
-    await this.update(id, { activo: true });
+    await this.update(id, { Activo: 1 as any });
+  }
+
+  /**
+   * Marca un asesor como retirado
+   *
+   * Los asesores retirados ya no trabajan con nosotros,
+   * pero mantienen su información en el sistema por si regresan.
+   *
+   * @param id - ID del asesor
+   */
+  static async marcarComoRetirado(id: number): Promise<void> {
+    await this.update(id, { Activo: 2 as any });
+  }
+
+  /**
+   * Reactiva un asesor retirado
+   *
+   * Útil cuando un asesor regresa a trabajar con nosotros.
+   *
+   * @param id - ID del asesor
+   */
+  static async reactivarDesdeRetirado(id: number): Promise<void> {
+    await this.update(id, { Activo: 1 as any });
   }
 
   /**
@@ -312,6 +342,64 @@ export class AsesorService {
     );
 
     return response.list;
+  }
+
+  /**
+   * Búsqueda inteligente para resolver nombres o slugs
+   *
+   * Intenta encontrar un asesor único usando varias estrategias:
+   * 1. Búsqueda exacta por slug
+   * 2. Búsqueda por slug generado (ej: "Juan Pablo" -> "juan-pablo")
+   * 3. Búsqueda exacta por nombre
+   * 4. Búsqueda parcial por nombre
+   *
+   * @param identifier - Nombre o slug (ej: "Juan Pablo", "juan-pablo")
+   * @returns El asesor único encontrado o null si no hay coincidencias o hay múltiples
+   */
+  static async findSmart(identifier: string): Promise<Asesor | null> {
+    if (!identifier) return null;
+    const cleanId = identifier.trim();
+
+    // 1. Intentar por slug exacto
+    const bySlug = await this.getBySlug(cleanId);
+    if (bySlug) return bySlug;
+
+    // 2. Intentar generando el slug
+    const generatedSlug = this.generateSlug(cleanId);
+    const byGenSlug = await this.getBySlug(generatedSlug);
+    if (byGenSlug) return byGenSlug;
+
+    // 3. Obtener todos los activos para filtrar en memoria
+    // (Es más eficiente que múltiples llamadas a la API si la lista es corta)
+    const allActive = await this.getAll(true);
+
+    // 4. Búsqueda exacta por nombre (case insensitive)
+    const exactMatch = allActive.find(
+      a => a.Aseror.toLowerCase() === cleanId.toLowerCase()
+    );
+    if (exactMatch) return exactMatch;
+
+    // 5. Búsqueda parcial (contiene el texto)
+    const partialMatches = allActive.filter(
+      a => a.Aseror.toLowerCase().includes(cleanId.toLowerCase())
+    );
+
+    if (partialMatches.length === 1) {
+      return partialMatches[0];
+    }
+
+    // Si hay múltiples coincidencias parciales (ej: "Juan" -> "Juan Pablo", "Juan Carlos"),
+    // intentamos ver si alguna empieza exactamente con el identificador
+    if (partialMatches.length > 1) {
+      const startMatches = partialMatches.filter(
+        a => a.Aseror.toLowerCase().startsWith(cleanId.toLowerCase())
+      );
+      if (startMatches.length === 1) {
+        return startMatches[0];
+      }
+    }
+
+    return null;
   }
 }
 

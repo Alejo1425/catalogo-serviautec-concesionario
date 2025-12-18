@@ -1,33 +1,22 @@
 version: '3.8'
 
 services:
-  # Instancia para Juan (Asesor real)
-  auteco-juan:
-    build:
-      context: .
-      dockerfile: Dockerfile
-      args:
-        VITE_ASESOR_ID: juan
-    container_name: auteco-juan
-    restart: unless-stopped
-    networks:
-      - traefik_proxy
-    labels:
-      - "traefik.enable=true"
-      - "traefik.docker.network=traefik_proxy"
-      - "traefik.http.routers.auteco-juan.rule=Host(`juan.autorunai.tech`)"
-      - "traefik.http.routers.auteco-juan.entrypoints=websecure"
-      - "traefik.http.routers.auteco-juan.tls=true"
-      - "traefik.http.routers.auteco-juan.tls.certresolver=mytlschallenge"
-      - "traefik.http.services.auteco-juan.loadbalancer.server.port=80"
-
-  # Instancia por defecto
+  # Instancia única con routing dinámico por slugs
   auteco-default:
     build:
       context: .
       dockerfile: Dockerfile
       args:
         VITE_ASESOR_ID: default
+        VITE_NOCODB_BASE_URL: ${VITE_NOCODB_BASE_URL}
+        VITE_NOCODB_TOKEN: ${VITE_NOCODB_TOKEN}
+        VITE_NOCODB_BASE_ID: ${VITE_NOCODB_BASE_ID}
+        VITE_CHATWOOT_BASE_URL: ${VITE_CHATWOOT_BASE_URL}
+        VITE_CHATWOOT_API_TOKEN: ${VITE_CHATWOOT_API_TOKEN}
+        VITE_CHATWOOT_ACCOUNT_ID: ${VITE_CHATWOOT_ACCOUNT_ID}
+        VITE_CHATWOOT_WEBSITE_TOKEN: ${VITE_CHATWOOT_WEBSITE_TOKEN}
+        VITE_APP_ENV: production
+        VITE_APP_URL: https://autorunai.tech
     container_name: auteco-default
     restart: unless-stopped
     networks:

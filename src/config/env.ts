@@ -84,6 +84,9 @@ export const chatwootConfig = {
 
   /** ID de la cuenta */
   accountId: getEnvVar('VITE_CHATWOOT_ACCOUNT_ID', false) || '1',
+
+  /** Website Token para el widget */
+  websiteToken: getEnvVar('VITE_CHATWOOT_WEBSITE_TOKEN'),
 } as const;
 
 /**
@@ -101,6 +104,9 @@ export const appConfig = {
 
   /** Si estamos en producción */
   isProd: getEnvVar('VITE_APP_ENV', false) === 'production',
+
+  /** Número de WhatsApp por defecto (General) */
+  defaultWhatsapp: getEnvVar('VITE_DEFAULT_WHATSAPP', false) || '3024894085', // Default a Diego (Admin) o número de empresa
 } as const;
 
 /**
