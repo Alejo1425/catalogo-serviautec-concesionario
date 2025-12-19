@@ -1,3 +1,14 @@
+/**
+ * Página Principal del Catálogo - Versión NocoDB
+ *
+ * Esta es una versión actualizada que usa datos de NocoDB en lugar de datos estáticos.
+ * Los cambios en NocoDB se reflejan automáticamente en la página.
+ *
+ * Para usarla:
+ * 1. Renombra Index.tsx a Index.backup.tsx
+ * 2. Renombra este archivo a Index.tsx
+ */
+
 import { useState, useMemo } from "react";
 import { Header } from "@/components/Header";
 import { Hero } from "@/components/Hero";
@@ -7,16 +18,16 @@ import { Footer } from "@/components/Footer";
 import { Button } from "@/components/ui/button";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { RefreshCw, AlertCircle } from "lucide-react";
-import { useMotos } from "@/hooks/useMotos";
+import { useMotos, useSincronizarMotos } from "@/hooks/useMotos";
 import { MotoService } from "@/services/nocodb";
-import type { MotoLegacy } from "@/types";
+import type { MotoNocoDB, MotoLegacy } from "@/types";
 
 const Index = () => {
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedMarca, setSelectedMarca] = useState<string | null>(null);
   const [selectedCategoria, setSelectedCategoria] = useState("todas");
 
-  // Obtener motos desde NocoDB con sincronización automática cada 30 segundos
+  // Obtener motos desde NocoDB con polling cada 30 segundos
   const {
     data: motosNocoDB,
     isLoading,
@@ -24,13 +35,13 @@ const Index = () => {
     refetch,
   } = useMotos(
     { soloActivas: true },
-    { refetchInterval: 1500 }
+    { refetchInterval: 30000 } // Sincronización automática cada 30 segundos
   );
 
   // Sincronización manual
+  const syncMotos = useSincronizarMotos();
 
-
-  // Convertir motos de NocoDB a formato legacy para compatibilidad
+  // Convertir motos de NocoDB a formato legacy para compatibilidad con MotoCard
   const motos: MotoLegacy[] = useMemo(() => {
     if (!motosNocoDB) return [];
     return MotoService.toLegacyFormatList(motosNocoDB);
@@ -57,22 +68,10 @@ const Index = () => {
     });
   }, [motos, searchQuery, selectedMarca, selectedCategoria]);
 
-  // Calcular conteos por categoría
-  const categoryCounts = useMemo(() => {
-    const counts: Record<string, number> = {
-      todas: motos.length
-    };
-
-    motos.forEach(moto => {
-      if (counts[moto.categoria]) {
-        counts[moto.categoria]++;
-      } else {
-        counts[moto.categoria] = 1;
-      }
-    });
-
-    return counts;
-  }, [motos]);
+  // Manejar sincronización manual
+  const handleSync = () => {
+    syncMotos.mutate();
+  };
 
   // Mostrar loading
   if (isLoading) {
@@ -80,8 +79,8 @@ const Index = () => {
       <div className="min-h-screen bg-background flex items-center justify-center">
         <div className="text-center">
           <RefreshCw className="w-12 h-12 animate-spin text-primary mx-auto mb-4" />
-          <p className="text-lg text-muted-foreground font-heading">Cargando catálogo...</p>
-          <p className="text-sm text-muted-foreground mt-2 font-body">
+          <p className="text-lg text-muted-foreground">Cargando catálogo...</p>
+          <p className="text-sm text-muted-foreground mt-2">
             Sincronizando con NocoDB
           </p>
         </div>
@@ -129,11 +128,38 @@ const Index = () => {
           selectedCategoria={selectedCategoria}
           onMarcaChange={setSelectedMarca}
           onCategoriaChange={setSelectedCategoria}
-          counts={categoryCounts}
         />
 
-        <section className="container mx-auto px-4 pt-6 pb-16">
+        <section className="container mx-auto px-4 pb-16">
+          <div className="flex justify-between items-center mb-6">
+            <h3 className="font-heading font-bold text-2xl text-foreground">
+              {filteredMotos.length}{" "}
+              {filteredMotos.length === 1 ? "moto encontrada" : "motos encontradas"}
+            </h3>
 
+            {/* Botón de sincronización manual */}
+            <Button
+              onClick={handleSync}
+              disabled={syncMotos.isPending}
+              variant="outline"
+              size="sm"
+              className="gap-2"
+            >
+              <RefreshCw
+                className={`w-4 h-4 ${syncMotos.isPending ? "animate-spin" : ""}`}
+              />
+              {syncMotos.isPending ? "Sincronizando..." : "Actualizar"}
+            </Button>
+          </div>
+
+          {/* Indicador de última sincronización */}
+          <div className="mb-4">
+            <p className="text-xs text-muted-foreground">
+              {syncMotos.isPending
+                ? "Sincronizando con NocoDB..."
+                : "Sincronización automática cada 30 segundos"}
+            </p>
+          </div>
 
           {filteredMotos.length > 0 ? (
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
@@ -146,11 +172,6 @@ const Index = () => {
               <p className="text-muted-foreground text-lg font-body">
                 No se encontraron motos con los filtros seleccionados.
               </p>
-              {motos.length === 0 && (
-                <p className="text-sm text-muted-foreground mt-2 font-body">
-                  Tip: Asegúrate de tener motos activas en NocoDB (campo Activo = 1)
-                </p>
-              )}
             </div>
           )}
         </section>

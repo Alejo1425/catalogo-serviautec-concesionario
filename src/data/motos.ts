@@ -154,7 +154,7 @@ export const motos: Moto[] = [
     imagen: raider125Fi,
     cilindrada: '125cc'
   },
-  {
+  /*{
     id: 'stryker-125-indo',
     modelo: 'STRYKER 125 INDO',
     marca: 'TVS',
@@ -165,7 +165,7 @@ export const motos: Moto[] = [
     imagen: raider125,
     cilindrada: '125cc'
   },
-  // TVS - APACHE 160
+  // TVS - APACHE 160*/
   {
     id: 'apache-rtr-160-carb',
     modelo: 'APACHE RTR 160 CARB ABS',
@@ -827,7 +827,7 @@ export const motos: Moto[] = [
     imagen: combat100,
     cilindrada: '100cc'
   },
-  {
+  /*{
     id: 'bomber-125',
     modelo: 'BOMBER 125',
     marca: 'Victory',
@@ -837,7 +837,7 @@ export const motos: Moto[] = [
     precioContado: 6286500,
     imagen: combat100,
     cilindrada: '125cc'
-  },
+  },*/
   {
     id: 'bomber-125-tk',
     modelo: 'BOMBER 125 TK',

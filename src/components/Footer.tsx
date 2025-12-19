@@ -8,7 +8,7 @@ export function Footer() {
           <div>
             <img 
               src="https://auteco.vtexassets.com/assets/vtex.file-manager-graphql/images/842550b6-d0da-4797-aadb-dc4e0493dc91___f559a76f2dffdf25985c6b99ec59ffef.svg" 
-              alt="Auteco" 
+              alt="Serviautec Concesionario Auteco" 
               className="h-8 brightness-0 invert mb-4"
             />
             <p className="text-secondary-foreground/70 font-body text-sm">
@@ -22,19 +22,19 @@ export function Footer() {
             <ul className="space-y-3 text-secondary-foreground/70 font-body text-sm">
               <li className="flex items-center gap-2">
                 <Phone className="w-4 h-4 text-primary" />
-                <a href="tel:3114319886" className="hover:text-primary transition-colors">
-                  311 431 9886
+                <a href="tel:3002643510" className="hover:text-primary transition-colors">
+                  300 264 3510
                 </a>
               </li>
               <li className="flex items-center gap-2">
                 <Globe className="w-4 h-4 text-primary" />
                 <a 
-                  href="https://auteco.com.co" 
+                  href="https://serviautec.com" 
                   target="_blank" 
                   rel="noopener noreferrer"
                   className="hover:text-primary transition-colors"
                 >
-                  auteco.com.co
+                  serviautec.com
                 </a>
               </li>
               <li className="flex items-center gap-2">
@@ -59,7 +59,7 @@ export function Footer() {
         
         <div className="border-t border-secondary-foreground/20 mt-8 pt-8 text-center">
           <p className="text-secondary-foreground/50 text-sm font-body">
-            © 2025 Catálogo Auteco. Precios sujetos a cambios sin previo aviso.
+            © 2025 Catálogo Serviautec Concesionario. Precios sujetos a cambios sin previo aviso.
           </p>
         </div>
       </div>

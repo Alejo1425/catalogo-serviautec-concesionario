@@ -4,13 +4,15 @@ import { Footer } from "@/components/Footer";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent } from "@/components/ui/card";
-import { ArrowLeft, MessageCircle, Fuel, Gauge, Settings, Cog, Heart } from "lucide-react";
+import { ArrowLeft, MessageCircle, Fuel, Gauge, Settings, Cog, Heart, RefreshCw } from "lucide-react";
 import { useChatwoot } from "@/hooks/useChatwoot";
 import { useConversationId } from "@/hooks/useConversationId";
 import { useAsesorContext } from "@/contexts";
 import { chatwootConfig } from "@/config/env";
 import { toast } from "sonner";
-import { motos } from "@/data/motos";
+import { useMotos } from "@/hooks/useMotos";
+import { MotoService } from "@/services/nocodb";
+import { MotoDetails } from "@/components/MotoDetails";
 import { enviarMensajeAConversacion, formatearMensajeMoto } from "@/services/chatwoot-api.service";
 
 const formatPrice = (price: number): string => {
@@ -54,101 +56,29 @@ const getCategoriaLabel = (categoria: string): string => {
   return labels[categoria] || categoria;
 };
 
-const getDescripcion = (moto: typeof motos[0]): string => {
-  const marca = moto.marca;
-  const modelo = moto.modelo;
-  const cilindrada = moto.cilindrada || '';
-  
-  if (marca === 'TVS') {
-    if (modelo.includes('SPORT 100')) {
-      return `La ${modelo} es una motocicleta de trabajo confiable y económica. Con motor de ${cilindrada}, ofrece excelente rendimiento de combustible y bajo costo de mantenimiento. Ideal para el uso diario y trabajo.`;
-    }
-    if (modelo.includes('RAIDER')) {
-      return `La ${modelo} combina estilo deportivo con practicidad urbana. Motor de ${cilindrada} con tecnología avanzada para un rendimiento óptimo. Perfecta para quienes buscan una moto ágil y con personalidad.`;
-    }
-    if (modelo.includes('APACHE 160')) {
-      return `La ${modelo} es una deportiva de alto rendimiento con motor de ${cilindrada}. Diseño agresivo, suspensión deportiva y frenos de alta eficiencia. La elección perfecta para los amantes de la velocidad y la adrenalina.`;
-    }
-    if (modelo.includes('APACHE 200')) {
-      return `La ${modelo} representa la cúspide del rendimiento deportivo con motor de ${cilindrada}. Tecnología de punta, diseño aerodinámico y potencia impresionante para una experiencia de conducción única.`;
-    }
-    if (modelo.includes('APACHE 310')) {
-      return `La ${modelo} es la máxima expresión de ingeniería TVS. Motor de ${cilindrada}, tecnología racing y prestaciones de alta gama para los más exigentes.`;
-    }
-    if (modelo.includes('NTORQ')) {
-      return `La ${modelo} es una scooter deportiva con conectividad inteligente. Motor de ${cilindrada}, diseño moderno y tecnología SmartXonnect para una experiencia de conducción conectada.`;
-    }
-    if (modelo.includes('NEON') || modelo.includes('DAZZ')) {
-      return `La ${modelo} es una scooter urbana práctica y económica. Motor de ${cilindrada}, amplio espacio de almacenamiento y excelente maniobrabilidad en la ciudad.`;
-    }
-    if (modelo.includes('KING')) {
-      return `El ${modelo} es un mototaxi/tricargo robusto y confiable. Motor de ${cilindrada}, capacidad de carga superior y comodidad para pasajeros. Ideal para transporte comercial.`;
-    }
-    if (modelo.includes('STRYKER')) {
-      return `La ${modelo} es una moto versátil para trabajo y uso diario. Motor de ${cilindrada}, construcción robusta y excelente economía de combustible.`;
-    }
-  }
-  
-  if (marca === 'Kymco') {
-    if (modelo.includes('TWIST')) {
-      return `La ${modelo} es una scooter urbana elegante y práctica. Motor de ${cilindrada}, diseño europeo y excelente comodidad para el día a día en la ciudad.`;
-    }
-    if (modelo.includes('AGILITY')) {
-      return `La ${modelo} es la scooter más vendida de Colombia. Motor de ${cilindrada}, confiabilidad comprobada, amplio espacio y el mejor respaldo de servicio postventa.`;
-    }
-  }
-  
-  if (marca === 'Victory') {
-    if (modelo.includes('ONE')) {
-      return `La ${modelo} es una moto de trabajo económica y confiable. Motor de ${cilindrada}, bajo consumo de combustible y mantenimiento accesible. Perfecta para mensajería y domicilios.`;
-    }
-    if (modelo.includes('ADVANCE')) {
-      return `La ${modelo} combina estilo y economía. Motor de ${cilindrada}, diseño moderno y excelente relación calidad-precio para el uso urbano diario.`;
-    }
-    if (modelo.includes('X1')) {
-      return `La ${modelo} ofrece tecnología de inyección en un paquete accesible. Motor de ${cilindrada} con inyección electrónica para mayor eficiencia y menor consumo.`;
-    }
-    if (modelo.includes('NEW LIFE')) {
-      return `La ${modelo} es perfecta para el trabajo diario. Motor de ${cilindrada}, construcción robusta y excelente capacidad de carga para mensajería y domicilios.`;
-    }
-    if (modelo.includes('MRX')) {
-      return `La ${modelo} está diseñada para la aventura. Motor de ${cilindrada}, suspensión reforzada y capacidad todo terreno para conquistar cualquier camino.`;
-    }
-    if (modelo.includes('NITRO')) {
-      return `La ${modelo} ofrece potencia y estilo en un paquete deportivo. Motor de ${cilindrada} y diseño agresivo para quienes buscan destacar.`;
-    }
-    if (modelo.includes('SWITCH')) {
-      return `La ${modelo} es versátil y práctica. Motor de ${cilindrada}, fácil manejo y perfecta para quienes inician en el mundo de las motos.`;
-    }
-    if (modelo.includes('COMBAT')) {
-      return `La ${modelo} es resistente y confiable para el trabajo pesado. Motor de ${cilindrada} y construcción duradera para las condiciones más exigentes.`;
-    }
-    if (modelo.includes('HUNTER')) {
-      return `La ${modelo} combina aventura y practicidad. Motor de ${cilindrada}, diseño adventure y capacidad para explorar nuevos caminos.`;
-    }
-    if (modelo.includes('TRICARGO')) {
-      return `El ${modelo} es un vehículo de carga eficiente. Motor de ${cilindrada}, amplia capacidad de carga y estabilidad para transporte comercial.`;
-    }
-  }
-  
-  if (marca === 'Benelli') {
-    return `La ${modelo} representa la tradición italiana en motocicletas. Motor de ${cilindrada}, diseño premium y tecnología avanzada para una experiencia de conducción excepcional.`;
-  }
-  
-  if (marca === 'Ceronte') {
-    return `La ${modelo} ofrece calidad y rendimiento. Motor de ${cilindrada}, construcción robusta y excelente valor para el mercado colombiano.`;
-  }
-  
-  if (marca === 'Zontes') {
-    return `La ${modelo} es una moto premium con tecnología de vanguardia. Motor de ${cilindrada}, acabados de alta calidad y prestaciones superiores para los más exigentes.`;
-  }
-  
-  return `La ${modelo} de ${marca} ofrece excelente rendimiento y confiabilidad. Con motor de ${cilindrada}, es perfecta para el uso diario.`;
-};
 
 const MotoDetail = () => {
   const { id } = useParams<{ id: string }>();
-  const moto = motos.find(m => m.id === id);
+
+  // Obtener todas las motos desde NocoDB y filtrar por el slug
+  // El ID en la URL es el slug del formato legacy (ej: "sport-100-els-spoke-tk")
+  const { data: motosNocoDB, isLoading, error } = useMotos({ soloActivas: true });
+
+  // Buscar la moto que coincida con el slug/id
+  const motoNocoDB = motosNocoDB?.find(m => {
+    // Convertir a formato legacy para obtener el ID slug
+    const legacyMoto = MotoService.toLegacyFormat(m);
+    return legacyMoto?.id === id;
+  });
+
+  // Crear objeto extendido manualmente con los campos que necesitamos
+  const moto = motoNocoDB ? {
+    ...motoNocoDB,
+    imagenPrincipal: motoNocoDB.Fotos_imagenes_motos?.[0]?.signedPath
+      ? `${import.meta.env.VITE_NOCODB_BASE_URL}/${motoNocoDB.Fotos_imagenes_motos[0].signedPath}`
+      : '',
+  } : null;
+
   const { asesorActual } = useAsesorContext();
   const { conversationId } = useConversationId();
 
@@ -165,15 +95,21 @@ const MotoDetail = () => {
       return;
     }
 
+    const marca = moto.Marca || '';
+    const modelo = moto.Productos_motos || '';
+    const cuotaInicial = moto.cuota_inicial || 0;
+    const precioContado = moto.precio_de_contado || 0;
+    const precioComercial = moto.Precio_comercial || 0;
+
     // Si hay un conversation ID, enviar mensaje directo a esa conversación via API
     if (conversationId) {
       try {
         const mensaje = formatearMensajeMoto({
-          marca: moto.marca,
-          modelo: moto.modelo,
-          cuotaInicial: moto.cuotaInicial,
-          precioContado: moto.precioContado,
-          precio2026: moto.precio2026,
+          marca,
+          modelo,
+          cuotaInicial,
+          precioContado,
+          precio2026: precioComercial,
         });
 
         await enviarMensajeAConversacion(conversationId, mensaje);
@@ -186,7 +122,7 @@ const MotoDetail = () => {
           );
         } else {
           toast.success(
-            `¡Mensaje enviado! Tu asesor verá tu interés en la ${moto.marca} ${moto.modelo}`,
+            `¡Mensaje enviado! Tu asesor verá tu interés en la ${marca} ${modelo}`,
             { duration: 5000 }
           );
         }
@@ -196,23 +132,23 @@ const MotoDetail = () => {
       }
     } else {
       // No hay conversation ID - usar el método tradicional con el widget
-      openChatWithMoto(moto.modelo, moto.marca, {
-        marca: moto.marca,
-        modelo: moto.modelo,
-        cuotaInicial: moto.cuotaInicial,
-        precioContado: moto.precioContado,
-        precio2026: moto.precio2026,
+      openChatWithMoto(modelo, marca, {
+        marca,
+        modelo,
+        cuotaInicial,
+        precioContado,
+        precio2026: precioComercial,
       });
 
       // Mostrar mensaje de confirmación
       if (asesorActual) {
         toast.success(
-          `¡Mensaje enviado! ${asesorActual.Aseror} verá tu interés en la ${moto.marca} ${moto.modelo}`,
+          `¡Mensaje enviado! ${asesorActual.Aseror} verá tu interés en la ${marca} ${modelo}`,
           { duration: 5000 }
         );
       } else {
         toast.success(
-          `${moto.marca} ${moto.modelo} agregada ✓ Abre el chat en la esquina para más información`,
+          `${marca} ${modelo} agregada ✓ Abre el chat en la esquina para más información`,
           { duration: 5000 }
         );
       }
@@ -223,7 +159,22 @@ const MotoDetail = () => {
   const whatsappNumber = asesorActual?.Phone || '3114319886';
   const asesorNombre = asesorActual?.Aseror || 'tu asesor';
 
-  if (!moto) {
+  // Loading state
+  if (isLoading) {
+    return (
+      <div className="min-h-screen bg-background">
+        <Header />
+        <main className="container mx-auto px-4 py-16 text-center">
+          <RefreshCw className="w-12 h-12 animate-spin text-primary mx-auto mb-4" />
+          <p className="text-lg text-muted-foreground font-heading">Cargando detalles...</p>
+        </main>
+        <Footer />
+      </div>
+    );
+  }
+
+  // Error or not found state
+  if (error || !moto) {
     return (
       <div className="min-h-screen bg-background">
         <Header />
@@ -243,19 +194,25 @@ const MotoDetail = () => {
     );
   }
 
+  const marca = moto.Marca || '';
+  const modelo = moto.Productos_motos || '';
+  const cilindrada = moto.Categoria_Cilindraje || '';
+  const categoria = moto.Categoria || '';
+  const imagenPrincipal = moto.imagenPrincipal || '';
+
   const whatsappMessage = encodeURIComponent(
-    `Hola ${asesorNombre}! Estoy interesado en la ${moto.marca} ${moto.modelo}. ¿Me pueden dar más información sobre precios y disponibilidad?`
+    `Hola ${asesorNombre}! Estoy interesado en la ${marca} ${modelo}. ¿Me pueden dar más información sobre precios y disponibilidad?`
   );
 
   return (
     <div className="min-h-screen bg-background">
       <Header />
-      
+
       <main className="container mx-auto px-4 py-8">
         {/* Breadcrumb */}
         <div className="mb-6">
-          <Link 
-            to="/" 
+          <Link
+            to="/"
             className="inline-flex items-center text-muted-foreground hover:text-primary transition-colors font-body"
           >
             <ArrowLeft className="w-4 h-4 mr-2" />
@@ -268,17 +225,17 @@ const MotoDetail = () => {
           <div className="relative">
             <div className="bg-gradient-to-br from-muted/50 to-muted rounded-2xl p-8 aspect-square flex items-center justify-center">
               <img
-                src={moto.imagen}
-                alt={moto.modelo}
+                src={imagenPrincipal}
+                alt={modelo}
                 className="max-w-full max-h-full object-contain"
               />
             </div>
             <div className="absolute top-4 left-4 flex gap-2">
-              <Badge className={`font-heading font-semibold ${getMarcaColor(moto.marca)}`}>
-                {moto.marca}
+              <Badge className={`font-heading font-semibold ${getMarcaColor(marca)}`}>
+                {marca}
               </Badge>
               <Badge variant="outline" className="bg-card/90 backdrop-blur-sm font-heading">
-                {getCategoriaLabel(moto.categoria)}
+                {getCategoriaLabel(categoria)}
               </Badge>
             </div>
           </div>
@@ -287,40 +244,31 @@ const MotoDetail = () => {
           <div className="space-y-6">
             <div>
               <h1 className="text-3xl lg:text-4xl font-heading font-bold text-foreground mb-2">
-                {moto.modelo}
+                {modelo}
               </h1>
-              {moto.cilindrada && (
+              {cilindrada && (
                 <p className="text-xl text-muted-foreground font-heading">
-                  Motor {moto.cilindrada}
+                  Motor {cilindrada}
                 </p>
               )}
             </div>
 
-            {/* Description */}
-            <Card className="border-border/50">
-              <CardContent className="p-6">
-                <h2 className="font-heading font-bold text-lg mb-3 text-foreground">
-                  Descripción
-                </h2>
-                <p className="text-muted-foreground font-body leading-relaxed">
-                  {getDescripcion(moto)}
-                </p>
-              </CardContent>
-            </Card>
+            {/* Extended Information: Características, Garantía, Ficha Técnica */}
+            <MotoDetails moto={moto} />
 
-            {/* Specifications */}
+            {/* Quick Specifications */}
             <Card className="border-border/50">
               <CardContent className="p-6">
                 <h2 className="font-heading font-bold text-lg mb-4 text-foreground">
-                  Especificaciones
+                  Especificaciones Rápidas
                 </h2>
                 <div className="grid grid-cols-2 gap-4">
-                  {moto.cilindrada && (
+                  {cilindrada && (
                     <div className="flex items-center gap-3 p-3 bg-muted/50 rounded-lg">
                       <Gauge className="w-5 h-5 text-primary" />
                       <div>
                         <p className="text-xs text-muted-foreground font-body">Cilindrada</p>
-                        <p className="font-heading font-semibold text-foreground">{moto.cilindrada}</p>
+                        <p className="font-heading font-semibold text-foreground">{cilindrada}</p>
                       </div>
                     </div>
                   )}
@@ -336,7 +284,7 @@ const MotoDetail = () => {
                     <div>
                       <p className="text-xs text-muted-foreground font-body">Transmisión</p>
                       <p className="font-heading font-semibold text-foreground">
-                        {moto.categoria === 'automatica' ? 'Automática' : 'Manual'}
+                        {categoria === 'automatica' ? 'Automática' : 'Manual'}
                       </p>
                     </div>
                   </div>
@@ -344,7 +292,7 @@ const MotoDetail = () => {
                     <Cog className="w-5 h-5 text-primary" />
                     <div>
                       <p className="text-xs text-muted-foreground font-body">Tipo</p>
-                      <p className="font-heading font-semibold text-foreground">{getCategoriaLabel(moto.categoria)}</p>
+                      <p className="font-heading font-semibold text-foreground">{getCategoriaLabel(categoria)}</p>
                     </div>
                   </div>
                 </div>
@@ -358,24 +306,46 @@ const MotoDetail = () => {
                   Precios
                 </h2>
                 <div className="space-y-4">
-                  <div className="flex justify-between items-center py-3 border-b border-border/50">
-                    <span className="text-muted-foreground font-body">Cuota Inicial:</span>
-                    <span className="font-heading font-bold text-primary text-2xl">
-                      {formatPrice(moto.cuotaInicial)}
-                    </span>
-                  </div>
-                  <div className="flex justify-between items-center py-3 border-b border-border/50">
-                    <span className="text-muted-foreground font-body">Precio 2026:</span>
-                    <span className="font-heading font-semibold text-foreground text-xl">
-                      {formatPrice(moto.precio2026)}
-                    </span>
-                  </div>
-                  <div className="flex justify-between items-center pt-2">
-                    <span className="text-muted-foreground font-body">Contado con papeles:</span>
-                    <span className="font-heading font-extrabold text-foreground text-2xl">
-                      {formatPrice(moto.precioContado)}
-                    </span>
-                  </div>
+                  {moto.cuota_inicial && (
+                    <div className="flex justify-between items-center py-3 border-b border-border/50">
+                      <span className="text-muted-foreground font-body">Cuota Inicial:</span>
+                      <span className="font-heading font-bold text-primary text-2xl">
+                        {formatPrice(moto.cuota_inicial)}
+                      </span>
+                    </div>
+                  )}
+                  {moto.Precio_comercial && (
+                    <div className="flex justify-between items-center py-3 border-b border-border/50">
+                      <span className="text-muted-foreground font-body">Precio Comercial:</span>
+                      <span className="font-heading font-semibold text-foreground text-xl">
+                        {formatPrice(moto.Precio_comercial)}
+                      </span>
+                    </div>
+                  )}
+                  {moto.precio_de_contado && (
+                    <div className="flex justify-between items-center pt-2">
+                      <span className="text-muted-foreground font-body">Contado con papeles:</span>
+                      <span className="font-heading font-extrabold text-foreground text-2xl">
+                        {formatPrice(moto.precio_de_contado)}
+                      </span>
+                    </div>
+                  )}
+
+                  {moto.precio_con_descuento && (
+                    <div className="flex justify-between items-center pt-3 border-t-2 border-primary/30">
+                      <span className="text-foreground font-body font-semibold">Precio con descuento:</span>
+                      <span className="font-heading font-extrabold text-green-600 text-2xl">
+                        {formatPrice(moto.precio_con_descuento)}
+                      </span>
+                    </div>
+                  )}
+                  {moto.Bono_de_descuento && (
+                    <div className="bg-green-50 dark:bg-green-950 p-3 rounded-lg">
+                      <p className="text-sm text-green-800 dark:text-green-200 font-body">
+                        <strong>Bono de descuento:</strong> {formatPrice(moto.Bono_de_descuento)}
+                      </p>
+                    </div>
+                  )}
                 </div>
               </CardContent>
             </Card>
@@ -401,7 +371,7 @@ const MotoDetail = () => {
                       className="w-full bg-primary hover:bg-primary/90 text-primary-foreground font-heading font-bold text-lg gap-3 py-6"
                     >
                       <Heart className="w-6 h-6" />
-                      {conversationId ? 'Me interesa - Continuar con el proceso' : `Me interesa - Hablar con ${asesorActual.Aseror}`}
+                      {conversationId ? 'Me interesa - Continuar con el proceso' : `Haz que sea tuya ahora - Hablar con ${asesorActual.Aseror}`}
                     </Button>
                   </>
                 ) : (
@@ -443,7 +413,7 @@ const MotoDetail = () => {
           </div>
         </div>
       </main>
-      
+
       <Footer />
     </div>
   );

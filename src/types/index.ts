@@ -20,7 +20,19 @@ export type {
   NocoDBResponse,
 } from './asesor';
 
-// 🎓 NOTA: A medida que agregues más tipos (Lead, Moto, etc.)
+// Tipos de Moto
+export type {
+  MotoNocoDB,
+  CrearMotoDTO,
+  ActualizarMotoDTO,
+  NocoDBResponseMotos,
+  MotoLegacy,
+  CaracteristicasMoto,
+  FichaTecnicaMoto,
+  MotoExtendida,
+  ConsultarMotosOptions,
+} from './moto';
+
+// 🎓 NOTA: A medida que agregues más tipos (Lead, etc.)
 // los exportarás aquí también:
 // export type { Lead } from './lead';
-// export type { Moto } from './moto';

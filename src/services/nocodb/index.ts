@@ -10,7 +10,7 @@
 
 export { NocoDBClient } from './client';
 export { AsesorService } from './asesor.service';
+export { MotoService } from './moto.service';
 
 // Cuando agregues más servicios, expórtalos aquí:
 // export { LeadService } from './lead.service';
-// export { MotoService } from './moto.service';

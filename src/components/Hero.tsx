@@ -9,7 +9,7 @@ interface HeroProps {
 
 export function Hero({ searchQuery, onSearchChange, totalMotos }: HeroProps) {
   return (
-    <section className="relative bg-gradient-to-br from-secondary via-secondary to-auteco-dark py-16 overflow-hidden">
+    <section className="relative bg-gradient-to-br from-secondary via-secondary to-auteco-dark py-8 md:py-16 overflow-hidden">
       {/* Background pattern */}
       <div className="absolute inset-0 opacity-5">
         <div className="absolute inset-0" style={{
@@ -19,10 +19,10 @@ export function Hero({ searchQuery, onSearchChange, totalMotos }: HeroProps) {
 
       <div className="container mx-auto px-4 relative z-10">
         <div className="text-center max-w-3xl mx-auto">
-          <h2 className="font-heading font-black text-4xl md:text-5xl lg:text-6xl text-secondary-foreground mb-4">
+          <h2 className="font-heading font-black text-2xl sm:text-4xl md:text-5xl lg:text-5.5xl text-secondary-foreground mb-4 leading-tight">
             Encuentra tu <span className="text-primary">moto ideal</span>
           </h2>
-          <p className="text-secondary-foreground/70 text-lg mb-8 font-body">
+          <p className="text-secondary-foreground/70 text-base md:text-lg mb-6 md:mb-8 font-body">
             Explora nuestro catálogo de {totalMotos} referencias con precios y cuotas iniciales actualizadas
           </p>
 
@@ -33,7 +33,7 @@ export function Hero({ searchQuery, onSearchChange, totalMotos }: HeroProps) {
               placeholder="Buscar por modelo, marca o cilindrada..."
               value={searchQuery}
               onChange={(e) => onSearchChange(e.target.value)}
-              className="pl-12 h-14 text-lg bg-card border-border/50 focus:border-primary rounded-full font-body"
+              className="pl-12 h-12 md:h-14 text-base md:text-lg bg-card border-border/50 focus:border-primary rounded-full font-body"
             />
           </div>
         </div>
