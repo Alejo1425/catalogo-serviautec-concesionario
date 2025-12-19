@@ -47,19 +47,23 @@ export function useConversationId() {
         // Guardar en localStorage
         localStorage.setItem(STORAGE_KEY, cid.toString());
         setConversationId(cid);
+        return; // Importante: salir temprano para evitar leer del localStorage
       } else {
         console.warn('⚠️ Parámetro cid inválido:', cidParam);
       }
-    } else {
-      // Si no hay parámetro en la URL, intentar leer de localStorage
-      const stored = localStorage.getItem(STORAGE_KEY);
-      if (stored) {
-        const cid = parseInt(stored, 10);
-        if (!isNaN(cid) && cid > 0) {
-          console.log(`📌 Conversación recuperada de localStorage: ${cid}`);
-          setConversationId(cid);
-        }
+    }
+
+    // Si no hay parámetro en la URL, intentar leer de localStorage
+    const stored = localStorage.getItem(STORAGE_KEY);
+    if (stored) {
+      const cid = parseInt(stored, 10);
+      if (!isNaN(cid) && cid > 0) {
+        console.log(`📌 Conversación recuperada de localStorage: ${cid}`);
+        setConversationId(cid);
       }
+    } else {
+      // No hay ni query param ni localStorage - limpiar el state
+      setConversationId(null);
     }
   }, [location.search]);
 
