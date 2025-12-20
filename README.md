@@ -419,4 +419,4 @@ Para problemas o preguntas:
 
 ## 📝 Licencia
 
-Proyecto privado - Auteco Colombia
+Proyecto desarrollado por **autorunai.tech** para **Serviautec Concesionario Auteco**

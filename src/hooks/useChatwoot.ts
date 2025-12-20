@@ -149,7 +149,7 @@ export function useChatwoot(options: UseChatwootOptions) {
   const openChatWithMoto = useCallback((
     motoModelo: string,
     motoMarca: string,
-    detalles?: {
+    _detalles?: {
       marca: string;
       modelo: string;
       cuotaInicial?: number;
@@ -162,7 +162,9 @@ export function useChatwoot(options: UseChatwootOptions) {
       return;
     }
 
-    abrirChatConMoto(motoModelo, motoMarca, detalles);
+    // Los detalles ya no se pasan porque abrirChatConMoto solo abre el chat
+    // Para enviar mensajes a conversaciones, usar enviarMensajeAConversacion()
+    abrirChatConMoto(motoModelo, motoMarca);
   }, [isLoaded]);
 
   /**

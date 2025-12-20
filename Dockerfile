@@ -8,7 +8,6 @@ WORKDIR /app
 
 # Copiar archivos de dependencias
 COPY package*.json ./
-COPY bun.lockb ./
 
 # Instalar dependencias
 RUN npm ci --legacy-peer-deps

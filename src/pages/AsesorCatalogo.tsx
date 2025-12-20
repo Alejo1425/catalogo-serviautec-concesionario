@@ -13,6 +13,7 @@ import { useEffect, useState } from 'react';
 import { useParams, Navigate } from 'react-router-dom';
 import { AsesorService } from '@/services/nocodb/asesor.service';
 import { useChatwoot } from '@/hooks/useChatwoot';
+import { useConversationId } from '@/hooks/useConversationId';
 import { useAsesorContext } from '@/contexts';
 import { chatwootConfig } from '@/config/env';
 import type { Asesor } from '@/types';
@@ -26,6 +27,10 @@ export default function AsesorCatalogo() {
 
   // Obtener el contexto del asesor para compartir con otros componentes
   const { seleccionarAsesor } = useAsesorContext();
+
+  // Hook para detectar y guardar el conversation ID desde la URL
+  // Esto es importante para rastrear conversaciones cuando el asesor envía enlaces con ?cid=123
+  useConversationId();
 
   // Cargar Chatwoot configurado para este asesor
   const { isLoaded, setAsesor: setChatwootAsesor } = useChatwoot({

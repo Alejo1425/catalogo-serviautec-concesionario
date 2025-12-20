@@ -295,103 +295,32 @@ function guardarMotosInteresLocal(motos: any[]): void {
 }
 
 /**
- * Envía un mensaje automático al chat
+ * NOTA: La función sendMessage del widget de Chatwoot no está disponible
+ * públicamente. Para enviar mensajes a conversaciones específicas, usar
+ * enviarMensajeAConversacion() del servicio chatwoot-api.service.ts
  *
- * @param mensaje - El mensaje a enviar
+ * Las funciones de formateo de mensajes se han movido a chatwoot-api.service.ts
+ */
+
+/**
+ * Abre el chat y registra el interés en una moto
  *
- * @example
- * ```ts
- * enviarMensaje('Hola, estoy interesado en esta moto');
- * ```
- */
-export function enviarMensaje(mensaje: string): void {
-  if (!window.$chatwoot) {
-    console.warn('⚠️ Chatwoot no está cargado');
-    return;
-  }
-
-  try {
-    window.$chatwoot.sendMessage(mensaje);
-    console.log('📤 Mensaje enviado:', mensaje.substring(0, 50) + '...');
-  } catch (error) {
-    console.error('❌ Error al enviar mensaje:', error);
-  }
-}
-
-/**
- * Interfaz para los detalles de una moto
- */
-interface DetallesMoto {
-  marca: string;
-  modelo: string;
-  cuotaInicial?: number;
-  precioContado?: number;
-  precio2026?: number;
-}
-
-/**
- * Formatea un mensaje con los detalles de la moto
- *
- * @param detalles - Detalles de la moto
- * @returns Mensaje formateado
- */
-function formatearMensajeMoto(detalles: DetallesMoto): string {
-  const { marca, modelo, cuotaInicial, precioContado, precio2026 } = detalles;
-
-  let mensaje = `🏍️ Me interesa la ${marca} ${modelo}`;
-
-  if (cuotaInicial || precioContado || precio2026) {
-    mensaje += '\n\n📊 Información:';
-
-    if (cuotaInicial) {
-      mensaje += `\n💰 Cuota inicial: ${formatearPrecio(cuotaInicial)}`;
-    }
-
-    if (precioContado) {
-      mensaje += `\n💵 Precio contado: ${formatearPrecio(precioContado)}`;
-    }
-
-    if (precio2026) {
-      mensaje += `\n📅 Precio 2026: ${formatearPrecio(precio2026)}`;
-    }
-  }
-
-  return mensaje;
-}
-
-/**
- * Formatea un precio en pesos colombianos
- */
-function formatearPrecio(precio: number): string {
-  return new Intl.NumberFormat('es-CO', {
-    style: 'currency',
-    currency: 'COP',
-    minimumFractionDigits: 0,
-    maximumFractionDigits: 0,
-  }).format(precio);
-}
-
-/**
- * Abre el chat con un mensaje pre-escrito sobre una moto
+ * NOTA: Ya no se envía mensaje automático porque el widget no soporta sendMessage().
+ * En su lugar, el usuario puede escribir directamente en el chat abierto.
+ * Para enviar mensajes a conversaciones específicas, usar enviarMensajeAConversacion()
+ * del servicio chatwoot-api.service.ts
  *
  * @param motoModelo - Modelo de la moto
  * @param motoMarca - Marca de la moto
- * @param detallesMoto - Detalles opcionales de la moto para enviar mensaje automático
  *
  * @example
  * ```ts
- * abrirChatConMoto('APACHE 160 4V', 'TVS', {
- *   marca: 'TVS',
- *   modelo: 'APACHE 160 4V',
- *   cuotaInicial: 1700000,
- *   precioContado: 10300000
- * });
+ * abrirChatConMoto('APACHE 160 4V', 'TVS');
  * ```
  */
 export function abrirChatConMoto(
   motoModelo: string,
-  motoMarca: string,
-  detallesMoto?: DetallesMoto
+  motoMarca: string
 ): void {
   if (!window.$chatwoot) {
     console.warn('⚠️ Chatwoot no está cargado');
@@ -405,16 +334,8 @@ export function abrirChatConMoto(
   // Actualizar localStorage
   guardarMotosInteresLocal(obtenerMotosInteres());
 
-  // Abrir el chat
+  // Abrir el chat para que el usuario pueda escribir
   abrirChat();
-
-  // Si se proporcionan detalles, enviar mensaje automático después de un breve delay
-  if (detallesMoto) {
-    setTimeout(() => {
-      const mensaje = formatearMensajeMoto(detallesMoto);
-      enviarMensaje(mensaje);
-    }, 1000); // Esperar 1 segundo para que el chat se abra completamente
-  }
 
   console.log(`💬 Chat abierto con interés en: ${motoMarca} ${motoModelo}`);
 }
