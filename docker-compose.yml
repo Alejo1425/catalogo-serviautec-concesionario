@@ -19,6 +19,12 @@ services:
         VITE_APP_URL: https://autorunai.tech
     container_name: auteco-default
     restart: unless-stopped
+    deploy:
+      resources:
+        limits:
+          memory: 128M
+        reservations:
+          memory: 64M
     networks:
       - traefik_proxy
     labels:
