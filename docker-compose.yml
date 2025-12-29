@@ -36,6 +36,41 @@ services:
       - "traefik.http.routers.auteco-default.tls.certresolver=mytlschallenge"
       - "traefik.http.services.auteco-default.loadbalancer.server.port=80"
 
+  # Ambiente de staging/desarrollo (rama develop)
+  auteco-staging:
+    build:
+      context: .
+      dockerfile: Dockerfile
+      args:
+        VITE_ASESOR_ID: default
+        VITE_NOCODB_BASE_URL: ${VITE_NOCODB_BASE_URL}
+        VITE_NOCODB_TOKEN: ${VITE_NOCODB_TOKEN}
+        VITE_NOCODB_BASE_ID: ${VITE_NOCODB_BASE_ID}
+        VITE_CHATWOOT_BASE_URL: ${VITE_CHATWOOT_BASE_URL}
+        VITE_CHATWOOT_API_TOKEN: ${VITE_CHATWOOT_API_TOKEN}
+        VITE_CHATWOOT_ACCOUNT_ID: ${VITE_CHATWOOT_ACCOUNT_ID}
+        VITE_CHATWOOT_WEBSITE_TOKEN: ${VITE_CHATWOOT_WEBSITE_TOKEN}
+        VITE_APP_ENV: staging
+        VITE_APP_URL: https://dev.autorunai.tech
+    container_name: auteco-staging
+    restart: unless-stopped
+    deploy:
+      resources:
+        limits:
+          memory: 128M
+        reservations:
+          memory: 64M
+    networks:
+      - traefik_proxy
+    labels:
+      - "traefik.enable=true"
+      - "traefik.docker.network=traefik_proxy"
+      - "traefik.http.routers.auteco-staging.rule=Host(`dev.autorunai.tech`)"
+      - "traefik.http.routers.auteco-staging.entrypoints=websecure"
+      - "traefik.http.routers.auteco-staging.tls=true"
+      - "traefik.http.routers.auteco-staging.tls.certresolver=mytlschallenge"
+      - "traefik.http.services.auteco-staging.loadbalancer.server.port=80"
+
 networks:
   traefik_proxy:
     external: true
