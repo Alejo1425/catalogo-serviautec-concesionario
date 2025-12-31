@@ -137,7 +137,7 @@ export class ChatwootAPIService {
         headers: this.getHeaders(),
         body: JSON.stringify({
           content: mensaje,
-          message_type: 'incoming', // 'incoming' = mensaje del cliente
+          message_type: 'outgoing', // 'outgoing' = mensaje desde asesor
           private: private_message,
         }),
       });
