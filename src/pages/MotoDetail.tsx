@@ -1,3 +1,4 @@
+import { useState, useMemo } from "react";
 import { useParams, Link } from "react-router-dom";
 import { Header } from "@/components/Header";
 import { Footer } from "@/components/Footer";
@@ -14,6 +15,15 @@ import { useMotos } from "@/hooks/useMotos";
 import { MotoService } from "@/services/nocodb";
 import { MotoDetails } from "@/components/MotoDetails";
 import { enviarMensajeAConversacion, formatearMensajeMoto } from "@/services/chatwoot-api.service";
+import { getDestinationPhone, getAdvisorName, buildWhatsAppUrl } from "@/config/contact";
+import {
+  calcularPrecios,
+  formatPrice as formatPriceDynamic,
+  tienePrecio2027,
+  generarMensajeWhatsApp,
+  type YearOption,
+} from "@/utils/pricing";
+import { cn } from "@/lib/utils";
 
 const formatPrice = (price: number): string => {
   return new Intl.NumberFormat('es-CO', {
@@ -82,6 +92,20 @@ const MotoDetail = () => {
   const { asesorActual } = useAsesorContext();
   const { conversationId } = useConversationId();
 
+  // Determinar si hay precio 2027 disponible
+  const hasPrecio2027 = motoNocoDB ? tienePrecio2027(motoNocoDB) : false;
+
+  // Estado del año seleccionado (2027 por defecto si está disponible)
+  const [selectedYear, setSelectedYear] = useState<YearOption>(hasPrecio2027 ? '2027' : '2026');
+
+  // Calcular precios dinámicamente
+  const preciosDinamicos = useMemo(() => {
+    if (motoNocoDB) {
+      return calcularPrecios(motoNocoDB, selectedYear);
+    }
+    return null;
+  }, [motoNocoDB, selectedYear]);
+
   const { isLoaded, openChatWithMoto } = useChatwoot({
     websiteToken: chatwootConfig.websiteToken,
     autoLoad: true,
@@ -97,9 +121,11 @@ const MotoDetail = () => {
 
     const marca = moto.Marca || '';
     const modelo = moto.Productos_motos || '';
-    const cuotaInicial = moto.cuota_inicial || 0;
-    const precioContado = moto.precio_de_contado || 0;
-    const precioComercial = moto.Precio_comercial || 0;
+
+    // Usar precios dinámicos si están disponibles
+    const cuotaInicial = preciosDinamicos?.inicial || moto.cuota_inicial || 0;
+    const precioContado = preciosDinamicos?.contado || moto.precio_de_contado || 0;
+    const precioComercial = preciosDinamicos?.comercial || moto.Precio_comercial || 0;
 
     // Si hay un conversation ID, enviar mensaje directo a esa conversación via API
     if (conversationId) {
@@ -110,6 +136,7 @@ const MotoDetail = () => {
           cuotaInicial,
           precioContado,
           precio2026: precioComercial,
+          year: selectedYear,
         });
 
         await enviarMensajeAConversacion(conversationId, mensaje);
@@ -138,6 +165,7 @@ const MotoDetail = () => {
         cuotaInicial,
         precioContado,
         precio2026: precioComercial,
+        year: selectedYear,
       });
 
       // Mostrar mensaje de confirmación
@@ -156,8 +184,8 @@ const MotoDetail = () => {
   };
 
   // Obtener el teléfono del asesor actual o usar el predeterminado
-  const whatsappNumber = asesorActual?.Phone || '3114319886';
-  const asesorNombre = asesorActual?.Asesor || 'tu asesor';
+  const whatsappNumber = getDestinationPhone(asesorActual);
+  const asesorNombre = getAdvisorName(asesorActual);
 
   // Loading state
   if (isLoading) {
@@ -200,9 +228,16 @@ const MotoDetail = () => {
   const categoria = moto.Categoria || '';
   const imagenPrincipal = moto.imagenPrincipal || '';
 
-  const whatsappMessage = encodeURIComponent(
-    `Hola ${asesorNombre}! Estoy interesado en la ${marca} ${modelo}. ¿Me pueden dar más información sobre precios y disponibilidad?`
-  );
+  // Construir mensaje de WhatsApp con precios dinámicos
+  const whatsappMessageText = generarMensajeWhatsApp({
+    marca,
+    modelo,
+    year: selectedYear,
+    comercial: preciosDinamicos?.comercial || null,
+    inicial: preciosDinamicos?.inicial || null,
+    asesorNombre,
+  });
+  const whatsappUrl = buildWhatsAppUrl(whatsappNumber, whatsappMessageText);
 
   return (
     <div className="min-h-screen bg-background">
@@ -302,32 +337,92 @@ const MotoDetail = () => {
             {/* Prices */}
             <Card className="border-primary/30 bg-primary/5">
               <CardContent className="p-6">
-                <h2 className="font-heading font-bold text-lg mb-4 text-foreground">
-                  Precios
-                </h2>
-                <div className="space-y-4">
-                  {moto.cuota_inicial && (
+                <div className="flex items-center justify-between mb-4">
+                  <h2 className="font-heading font-bold text-lg text-foreground">
+                    Precios
+                  </h2>
+
+                  {/* Selector de Año - Solo mostrar si hay precio 2027 */}
+                  {hasPrecio2027 && (
+                    <div className="flex items-center gap-1 p-1 bg-muted/50 rounded-lg">
+                      <button
+                        onClick={() => setSelectedYear('2026')}
+                        className={cn(
+                          "px-4 py-1.5 text-sm font-semibold rounded-md transition-all",
+                          selectedYear === '2026'
+                            ? "bg-primary text-primary-foreground shadow-sm"
+                            : "text-muted-foreground hover:text-foreground"
+                        )}
+                      >
+                        2026
+                      </button>
+                      <button
+                        onClick={() => setSelectedYear('2027')}
+                        className={cn(
+                          "px-4 py-1.5 text-sm font-semibold rounded-md transition-all",
+                          selectedYear === '2027'
+                            ? "bg-emerald-600 text-white shadow-sm"
+                            : "text-muted-foreground hover:text-foreground"
+                        )}
+                      >
+                        2027
+                      </button>
+                    </div>
+                  )}
+                </div>
+
+                {/* Indicador de modelo año si no hay selector */}
+                {!hasPrecio2027 && (
+                  <Badge variant="outline" className="mb-4 text-xs">
+                    Modelo 2026
+                  </Badge>
+                )}
+
+                <div className={cn("space-y-4", !preciosDinamicos?.disponible && "opacity-50")}>
+                  {preciosDinamicos?.inicial && (
                     <div className="flex justify-between items-center py-3 border-b border-border/50">
-                      <span className="text-muted-foreground font-body">Cuota Inicial:</span>
+                      <div className="flex items-center gap-2">
+                        <span className="text-muted-foreground font-body">Cuota Inicial:</span>
+                        <Badge
+                          variant="secondary"
+                          className={cn(
+                            "text-xs px-2 py-0 h-5 font-bold border-none",
+                            preciosDinamicos.porcentaje === 0.15
+                              ? "bg-amber-100 text-amber-700 dark:bg-amber-900/30 dark:text-amber-400"
+                              : "bg-muted text-muted-foreground"
+                          )}
+                        >
+                          {Math.round(preciosDinamicos.porcentaje * 100)}% de inicial
+                        </Badge>
+                      </div>
                       <span className="font-heading font-bold text-primary text-2xl">
-                        {formatPrice(moto.cuota_inicial)}
+                        {formatPriceDynamic(preciosDinamicos.inicial)}
                       </span>
                     </div>
                   )}
-                  {moto.Precio_comercial && (
+                  {preciosDinamicos?.comercial && (
                     <div className="flex justify-between items-center py-3 border-b border-border/50">
                       <span className="text-muted-foreground font-body">Precio Comercial:</span>
                       <span className="font-heading font-semibold text-foreground text-xl">
-                        {formatPrice(moto.Precio_comercial)}
+                        {formatPriceDynamic(preciosDinamicos.comercial)}
                       </span>
                     </div>
                   )}
-                  {moto.precio_de_contado && (
+                  {preciosDinamicos?.contado && (
                     <div className="flex justify-between items-center pt-2">
                       <span className="text-muted-foreground font-body">Contado con papeles:</span>
                       <span className="font-heading font-extrabold text-foreground text-2xl">
-                        {formatPrice(moto.precio_de_contado)}
+                        {formatPriceDynamic(preciosDinamicos.contado)}
                       </span>
+                    </div>
+                  )}
+
+                  {/* Precio sin disponibilidad */}
+                  {!preciosDinamicos?.disponible && (
+                    <div className="text-center py-4">
+                      <p className="text-muted-foreground font-body">
+                        Precio {selectedYear} no disponible
+                      </p>
                     </div>
                   )}
 
@@ -397,7 +492,7 @@ const MotoDetail = () => {
                         className="w-full bg-green-600 hover:bg-green-700 text-white font-heading font-bold text-lg gap-3 py-6"
                       >
                         <a
-                          href={`https://wa.me/57${whatsappNumber}?text=${whatsappMessage}`}
+                          href={whatsappUrl}
                           target="_blank"
                           rel="noopener noreferrer"
                         >

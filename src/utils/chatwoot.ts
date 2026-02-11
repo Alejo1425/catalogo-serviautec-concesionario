@@ -63,7 +63,6 @@ export async function loadChatwootWidget(websiteToken: string): Promise<void> {
   return new Promise((resolve, reject) => {
     // Si ya está cargado, no cargar de nuevo
     if (window.$chatwoot) {
-      console.log('✅ Chatwoot ya está cargado');
       resolve();
       return;
     }
@@ -84,7 +83,6 @@ export async function loadChatwootWidget(websiteToken: string): Promise<void> {
 
     // Cuando el script cargue, inicializar el widget
     script.onload = () => {
-      console.log('📦 Script de Chatwoot cargado, inicializando...');
 
       // Intentar inicializar el SDK
       const initializeWidget = () => {
@@ -98,7 +96,6 @@ export async function loadChatwootWidget(websiteToken: string): Promise<void> {
             // Esperar a que $chatwoot esté disponible
             setTimeout(() => {
               if (window.$chatwoot) {
-                console.log('✅ Chatwoot widget inicializado correctamente');
                 resolve();
               } else {
                 console.error('❌ $chatwoot no está disponible después de inicializar');
@@ -125,7 +122,6 @@ export async function loadChatwootWidget(websiteToken: string): Promise<void> {
     };
 
     // Agregar el script al documento
-    console.log('📥 Cargando script de Chatwoot...');
     document.head.appendChild(script);
   });
 }
@@ -155,7 +151,6 @@ export function configurarAsesor(asesorNombre: string, asesorId: number): void {
     fecha_contacto: new Date().toISOString(),
   });
 
-  console.log(`✅ Asesor configurado: ${asesorNombre} (ID: ${asesorId})`);
 }
 
 /**
@@ -206,7 +201,6 @@ export function configurarUsuario(user: ChatwootUser): void {
 
   window.$chatwoot.setUser(identifier, user);
 
-  console.log(`✅ Usuario configurado: ${user.name || identifier}`);
 }
 
 /**
@@ -263,9 +257,7 @@ export function agregarMotoInteres(
       total_motos_interes: motosInteresActuales.length,
     });
 
-    console.log(`✅ Moto agregada a interés: ${motoMarca} ${motoModelo}`);
   } else {
-    console.log(`ℹ️ Moto ya estaba en la lista de interés: ${motoMarca} ${motoModelo}`);
   }
 }
 
@@ -337,7 +329,6 @@ export function abrirChatConMoto(
   // Abrir el chat para que el usuario pueda escribir
   abrirChat();
 
-  console.log(`💬 Chat abierto con interés en: ${motoMarca} ${motoModelo}`);
 }
 
 /**
@@ -353,7 +344,6 @@ export function limpiarMotosInteres(): void {
   window.$chatwoot.deleteCustomAttribute('total_motos_interes');
   localStorage.removeItem('chatwoot_motos_interes');
 
-  console.log('✅ Lista de motos de interés limpiada');
 }
 
 /**

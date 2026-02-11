@@ -50,10 +50,8 @@ export default function AsesorCatalogo() {
 
       try {
         setLoading(true);
-        console.log('🔍 Buscando asesor con slug:', slug);
         const asesorEncontrado = await AsesorService.getBySlug(slug);
 
-        console.log('📊 Asesor encontrado:', asesorEncontrado);
 
         if (!asesorEncontrado) {
           console.error('❌ No se encontró asesor con slug:', slug);
@@ -65,22 +63,21 @@ export default function AsesorCatalogo() {
         // Validar que el asesor tenga nombre
         const nombreAsesor = getNombreAsesor(asesorEncontrado);
         if (!nombreAsesor) {
-          console.error('⚠️ El asesor no tiene nombre definido:', asesorEncontrado);
-          console.error('Campos disponibles:', Object.keys(asesorEncontrado));
+          console.error("⚠️ Error de configuración de asesor");
+          console.error("⚠️ Error de configuración de asesor");
           setError('Error en la configuración del asesor - Falta el nombre en NocoDB');
           setLoading(false);
           return;
         }
 
         // Verificar que el asesor esté activo
-        if (asesorEncontrado.Activo !== 1) {
-          console.error('⚠️ Asesor inactivo. Estado:', asesorEncontrado.Activo);
+        if (!asesorEncontrado.Activo) {
+          console.error("⚠️ Error de configuración de asesor");
           setError('Este asesor no está disponible actualmente');
           setLoading(false);
           return;
         }
 
-        console.log('✅ Asesor válido, cargando catálogo...');
         setAsesor(asesorEncontrado);
         // Setear el asesor en el contexto global para que otros componentes lo usen
         seleccionarAsesor(asesorEncontrado);
@@ -100,7 +97,6 @@ export default function AsesorCatalogo() {
     if (isLoaded && asesor) {
       const nombreAsesor = getNombreAsesor(asesor);
       setChatwootAsesor(nombreAsesor, asesor.Id);
-      console.log(`✅ Catálogo cargado para: ${nombreAsesor} (/${slug})`);
     }
   }, [isLoaded, asesor, slug, setChatwootAsesor]);
 

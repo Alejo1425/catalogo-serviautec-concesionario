@@ -274,13 +274,11 @@ export function useAsesor(slug: string | undefined) {
         setLoading(true);
         setError(null);
 
-        console.log('🔄 Cargando asesor:', slug);
 
         const data = await AsesorService.getBySlug(slug);
 
         if (data) {
           setAsesor(data);
-          console.log('✅ Asesor cargado:', data.Asesor);
         } else {
           setError('Asesor no encontrado');
         }

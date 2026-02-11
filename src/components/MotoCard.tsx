@@ -1,3 +1,4 @@
+import { useState, useMemo } from "react";
 import { Link } from "react-router-dom";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
@@ -5,21 +6,23 @@ import { Button } from "@/components/ui/button";
 import { MessageCircle, Eye } from "lucide-react";
 import { useAsesorContext } from "@/contexts";
 import type { Moto } from "@/data/motos";
-import { appConfig } from "@/config/env";
+import type { MotoNocoDB } from "@/types/moto";
+import { getDestinationPhone, getAdvisorName, buildWhatsAppUrl } from "@/config/contact";
+import {
+  calcularPrecios,
+  formatPrice,
+  tienePrecio2027,
+  generarMensajeWhatsApp,
+  type YearOption,
+} from "@/utils/pricing";
+import { cn } from "@/lib/utils";
 
 interface MotoCardProps {
   moto: Moto;
   index: number;
+  /** Datos raw de NocoDB para cálculo dinámico de precios */
+  rawData?: MotoNocoDB;
 }
-
-const formatPrice = (price: number): string => {
-  return new Intl.NumberFormat('es-CO', {
-    style: 'currency',
-    currency: 'COP',
-    minimumFractionDigits: 0,
-    maximumFractionDigits: 0,
-  }).format(price);
-};
 
 const getMarcaColor = (marca: string): string => {
   switch (marca) {
@@ -40,12 +43,45 @@ const getMarcaColor = (marca: string): string => {
   }
 };
 
-export function MotoCard({ moto, index }: MotoCardProps) {
+export function MotoCard({ moto, index, rawData }: MotoCardProps) {
   const { asesorActual } = useAsesorContext();
 
-  // Obtener el teléfono del asesor actual o usar el predeterminado
-  const whatsappNumber = asesorActual?.Phone || appConfig.defaultWhatsapp;
-  const asesorNombre = asesorActual?.Asesor || 'tu asesor';
+  // Determinar si hay precio 2027 disponible
+  const hasPrecio2027 = rawData ? tienePrecio2027(rawData) : false;
+
+  // Estado del año seleccionado (2027 por defecto si está disponible)
+  const [selectedYear, setSelectedYear] = useState<YearOption>(hasPrecio2027 ? '2027' : '2026');
+
+  // Calcular precios dinámicamente si hay rawData
+  const precios = useMemo(() => {
+    if (rawData) {
+      return calcularPrecios(rawData, selectedYear);
+    }
+    // Fallback a valores legacy
+    return {
+      comercial: moto.precio2026,
+      contado: moto.precioContado,
+      inicial: moto.cuotaInicial,
+      porcentaje: 0.10,
+      disponible: true,
+    };
+  }, [rawData, selectedYear, moto]);
+
+  // Obtener teléfono y nombre del asesor
+  const whatsappNumber = getDestinationPhone(asesorActual);
+  const asesorNombre = getAdvisorName(asesorActual);
+
+  // Construir mensaje de WhatsApp con precios dinámicos
+  const whatsappMessage = generarMensajeWhatsApp({
+    marca: moto.marca,
+    modelo: moto.modelo,
+    year: selectedYear,
+    comercial: precios.comercial,
+    inicial: precios.inicial,
+    asesorNombre,
+  });
+
+  const whatsappUrl = buildWhatsAppUrl(whatsappNumber, whatsappMessage);
 
   return (
     <Card
@@ -73,26 +109,93 @@ export function MotoCard({ moto, index }: MotoCardProps) {
               {moto.cilindrada}
             </Badge>
           )}
+          {/* Badge de Año Modelo - Siempre visible */}
+          {rawData && (
+            <Badge
+              className={cn(
+                "absolute bottom-3 left-3 font-heading font-bold text-sm px-3 py-1",
+                selectedYear === '2027'
+                  ? "bg-emerald-600 text-white"
+                  : "bg-indigo-600 text-white"
+              )}
+            >
+              Modelo {selectedYear}
+            </Badge>
+          )}
         </div>
       </Link>
 
       <CardContent className="p-5">
-        <h3 className="font-heading font-bold text-lg text-foreground mb-4 line-clamp-2 min-h-[3.5rem]">
+        <h3 className="font-heading font-bold text-lg text-foreground mb-2 line-clamp-2 min-h-[3.5rem]">
           {moto.modelo}
         </h3>
 
-        <div className="space-y-3">
+        {/* Selector de Año - Solo mostrar si hay precio 2027 */}
+        {rawData && hasPrecio2027 && (
+          <div className="flex items-center gap-1 mb-3 p-1 bg-muted/50 rounded-lg">
+            <button
+              onClick={(e) => {
+                e.preventDefault();
+                setSelectedYear('2026');
+              }}
+              className={cn(
+                "flex-1 px-3 py-1.5 text-xs font-semibold rounded-md transition-all",
+                selectedYear === '2026'
+                  ? "bg-primary text-primary-foreground shadow-sm"
+                  : "text-muted-foreground hover:text-foreground"
+              )}
+            >
+              2026
+            </button>
+            <button
+              onClick={(e) => {
+                e.preventDefault();
+                setSelectedYear('2027');
+              }}
+              className={cn(
+                "flex-1 px-3 py-1.5 text-xs font-semibold rounded-md transition-all",
+                selectedYear === '2027'
+                  ? "bg-emerald-600 text-white shadow-sm"
+                  : "text-muted-foreground hover:text-foreground"
+              )}
+            >
+              2027
+            </button>
+          </div>
+        )}
+
+        {/* Indicador de año cuando no hay precio 2027 - Sin selector */}
+        {rawData && !hasPrecio2027 && (
+          <div className="mb-3 text-center">
+            <span className="text-xs text-muted-foreground">Solo disponible modelo 2026</span>
+          </div>
+        )}
+
+        <div className={cn("space-y-3", !precios.disponible && "opacity-50")}>
           <div className="flex justify-between items-center py-2 border-b border-border/50">
-            <span className="text-sm text-muted-foreground font-body">Cuota Inicial:</span>
+            <div className="flex items-center gap-1.5">
+              <span className="text-sm text-muted-foreground font-body">Cuota Inicial:</span>
+              <Badge
+                variant="secondary"
+                className={cn(
+                  "text-[10px] px-1 py-0 h-4 font-bold border-none",
+                  precios.porcentaje === 0.15
+                    ? "bg-amber-100 text-amber-700 dark:bg-amber-900/30 dark:text-amber-400"
+                    : "bg-muted text-muted-foreground"
+                )}
+              >
+                {Math.round(precios.porcentaje * 100)}%
+              </Badge>
+            </div>
             <span className="font-heading font-bold text-primary text-lg">
-              {formatPrice(moto.cuotaInicial)}
+              {precios.disponible ? formatPrice(precios.inicial) : '-'}
             </span>
           </div>
 
           <div className="flex justify-between items-center pt-1">
             <span className="text-sm text-muted-foreground font-body">Contado c/papeles:</span>
             <span className="font-heading font-extrabold text-foreground text-xl">
-              {formatPrice(moto.precioContado)}
+              {precios.disponible ? formatPrice(precios.contado) : '-'}
             </span>
           </div>
         </div>
@@ -128,7 +231,7 @@ export function MotoCard({ moto, index }: MotoCardProps) {
                 className="flex-1 bg-green-600 hover:bg-green-700 text-white font-heading font-semibold gap-2"
               >
                 <a
-                  href={`https://wa.me/57${whatsappNumber}?text=${encodeURIComponent(`Hola ${asesorNombre}! Estoy interesado en la ${moto.marca} ${moto.modelo}. ¿Me pueden dar más información?`)}`}
+                  href={whatsappUrl}
                   target="_blank"
                   rel="noopener noreferrer"
                 >

@@ -125,8 +125,7 @@ export const appConfig = {
 
 // Log de configuración en desarrollo (solo para debugging)
 if (appConfig.isDev) {
-  console.log('🔧 Configuración cargada:', {
-    nocodb: {
+    console.log("🚀 Configuración inicial:", { nocodb: {
       baseUrl: nocodbConfig.baseUrl,
       tokenPresent: !!nocodbConfig.token,
     },

@@ -23,15 +23,11 @@ export default function ResolvingAsesor() {
             }
 
             try {
-                console.log(`🔍 Resolviendo asesor: "${identifier}"...`);
-                console.log(`📍 Query params detectados: "${location.search}"`);
-                console.log(`📍 Full location:`, location);
 
                 const asesor = await AsesorService.findSmart(identifier);
 
                 if (asesor && asesor.slug) {
                     const targetUrl = `/${asesor.slug}${location.search}`;
-                    console.log(`✅ Asesor encontrado: ${asesor.Asesor} -> ${targetUrl}`);
                     // Mantener los query params (ej: ?cid=123)
                     navigate(targetUrl, { replace: true });
                 } else {

@@ -29,12 +29,10 @@ export default function TestAsesores() {
     // Función async para obtener datos
     async function cargarAsesores() {
       try {
-        console.log('🔄 Cargando asesores...');
 
         // Llamar al servicio
         const data = await AsesorService.getAll();
 
-        console.log('✅ Asesores cargados:', data);
 
         // Guardar en el estado
         setAsesores(data);
@@ -140,9 +138,7 @@ export default function TestAsesores() {
         <p>Presiona F12 y ve a la pestaña "Console" para ver los logs.</p>
         <button
           onClick={async () => {
-            console.log('🔍 Probando búsqueda...');
             const resultados = await AsesorService.buscar('ale');
-            console.log('Resultados de búsqueda "ale":', resultados);
           }}
           className="mt-2 px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700"
         >

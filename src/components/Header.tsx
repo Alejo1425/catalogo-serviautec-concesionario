@@ -7,7 +7,7 @@ export function Header() {
       {/* Top bar */}
       <div className="bg-primary text-primary-foreground py-1 relative">
         <div className="container mx-auto px-4 flex justify-between items-center text-sm h-8">
-          <span className="font-body hidden sm:block">Precios actualizados - Diciembre 2025</span>
+          <span className="font-body hidden sm:block">Precios actualizados - Enero</span>
           <a
             href="tel:3002643510"
             className="flex items-center gap-2 hover:opacity-80 transition-opacity font-heading font-semibold mr-10 sm:mr-0"

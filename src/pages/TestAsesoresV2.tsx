@@ -30,7 +30,6 @@ export default function TestAsesoresV2() {
   const { asesores, loading, error, refetch, buscar } = useAsesores({
     soloActivos: false,
     onSuccess: (data) => {
-      console.log('🎉 Callback: Asesores cargados!', data.length);
     },
     onError: (err) => {
       console.error('💥 Callback: Error!', err.message);
@@ -208,7 +207,6 @@ export default function TestAsesoresV2() {
             variant="secondary"
             onClick={() => {
               console.clear();
-              console.log('🧹 Consola limpiada');
             }}
           >
             Limpiar Consola

@@ -85,7 +85,6 @@ export function AsesorProvider({ children }: AsesorProviderProps) {
       return;
     }
 
-    console.log('🎯 Asesor seleccionado:', nombre);
     setAsesorActual(asesor);
 
     // 🎓 CONCEPTO: Persistencia opcional
@@ -97,7 +96,6 @@ export function AsesorProvider({ children }: AsesorProviderProps) {
    * Función para limpiar la selección
    */
   const limpiarAsesor = useCallback(() => {
-    console.log('🧹 Limpiando selección de asesor');
     setAsesorActual(null);
     // localStorage.removeItem('asesorActual');
   }, []);
