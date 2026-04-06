@@ -103,8 +103,8 @@ const MotoDetail = () => {
   // Estado del año seleccionado manualmente por el usuario
   const [manualYear, setManualYear] = useState<YearOption | null>(null);
 
-  // El año efectivo (2027 por defecto si está disponible y no seleccionado manualmente)
-  const selectedYear: YearOption = manualYear || (hasPrecio2027 ? '2027' : '2026');
+  // Siempre mostrar 2027 por defecto; Apache 160 Carb puede cambiar manualmente
+  const selectedYear: YearOption = manualYear || '2027';
 
   // Calcular precios dinámicamente
   const preciosDinamicos = useMemo(() => {
@@ -378,13 +378,6 @@ const MotoDetail = () => {
                     </div>
                   )}
                 </div>
-
-                {/* Indicador de modelo año si no hay selector */}
-                {!hasPrecio2027 && (
-                  <Badge variant="outline" className="mb-4 text-xs">
-                    Modelo 2026
-                  </Badge>
-                )}
 
                 <div className={cn("space-y-4", !preciosDinamicos?.disponible && "opacity-50")}>
                   {preciosDinamicos?.inicial && (

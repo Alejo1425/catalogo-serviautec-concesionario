@@ -57,8 +57,8 @@ export function MotoCard({ moto, index, rawData }: MotoCardProps) {
   // Estado del año seleccionado manualmente por el usuario
   const [manualYear, setManualYear] = useState<YearOption | null>(null);
 
-  // El año efectivo (2027 por defecto si está disponible y no se ha seleccionado manualmente)
-  const selectedYear: YearOption = manualYear || (hasPrecio2027 ? '2027' : '2026');
+  // Siempre mostrar 2027 por defecto; Apache 160 Carb puede cambiar manualmente
+  const selectedYear: YearOption = manualYear || '2027';
 
   // Calcular precios dinámicamente si hay rawData
   const precios = useMemo(() => {
@@ -169,13 +169,6 @@ export function MotoCard({ moto, index, rawData }: MotoCardProps) {
             >
               2027
             </button>
-          </div>
-        )}
-
-        {/* Indicador de año cuando no hay precio 2027 - Sin selector */}
-        {rawData && !hasPrecio2027 && (
-          <div className="mb-3 text-center">
-            <span className="text-xs text-muted-foreground">Solo disponible modelo 2026</span>
           </div>
         )}
 

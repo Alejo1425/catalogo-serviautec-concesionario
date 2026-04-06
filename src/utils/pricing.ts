@@ -93,8 +93,7 @@ export const calcularPrecios = (
   const precioBase = cleanNumber(
     year === '2027'
       ? (moto as Record<string, unknown>)['Precio comercial 2027'] ||
-      (moto as Record<string, unknown>)['Precio_comercial_2027'] ||
-      (moto as MotoNocoDB).Precio_comercial // Fallback a 2026 si no hay 2027
+      (moto as Record<string, unknown>)['Precio_comercial_2027']
       : (moto as MotoNocoDB).Precio_comercial
   );
 
