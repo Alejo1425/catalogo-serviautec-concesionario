@@ -100,8 +100,11 @@ const MotoDetail = () => {
     ? (motoNocoDB.Productos_motos || '').toUpperCase().includes('RTR 160 CARB')
     : false;
 
-  // Estado del año seleccionado (2027 por defecto si está disponible)
-  const [selectedYear, setSelectedYear] = useState<YearOption>(hasPrecio2027 ? '2027' : '2026');
+  // Estado del año seleccionado manualmente por el usuario
+  const [manualYear, setManualYear] = useState<YearOption | null>(null);
+
+  // El año efectivo (2027 por defecto si está disponible y no seleccionado manualmente)
+  const selectedYear: YearOption = manualYear || (hasPrecio2027 ? '2027' : '2026');
 
   // Calcular precios dinámicamente
   const preciosDinamicos = useMemo(() => {
@@ -351,7 +354,7 @@ const MotoDetail = () => {
                   {hasPrecio2027 && isApache160Carb && (
                     <div className="flex items-center gap-1 p-1 bg-muted/50 rounded-lg">
                       <button
-                        onClick={() => setSelectedYear('2026')}
+                        onClick={() => setManualYear('2026')}
                         className={cn(
                           "px-4 py-1.5 text-sm font-semibold rounded-md transition-all",
                           selectedYear === '2026'
@@ -362,7 +365,7 @@ const MotoDetail = () => {
                         2026
                       </button>
                       <button
-                        onClick={() => setSelectedYear('2027')}
+                        onClick={() => setManualYear('2027')}
                         className={cn(
                           "px-4 py-1.5 text-sm font-semibold rounded-md transition-all",
                           selectedYear === '2027'

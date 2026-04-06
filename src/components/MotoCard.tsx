@@ -54,8 +54,11 @@ export function MotoCard({ moto, index, rawData }: MotoCardProps) {
     ? (rawData.Productos_motos || '').toUpperCase().includes('RTR 160 CARB')
     : false;
 
-  // Estado del año seleccionado (2027 por defecto si está disponible)
-  const [selectedYear, setSelectedYear] = useState<YearOption>(hasPrecio2027 ? '2027' : '2026');
+  // Estado del año seleccionado manualmente por el usuario
+  const [manualYear, setManualYear] = useState<YearOption | null>(null);
+
+  // El año efectivo (2027 por defecto si está disponible y no se ha seleccionado manualmente)
+  const selectedYear: YearOption = manualYear || (hasPrecio2027 ? '2027' : '2026');
 
   // Calcular precios dinámicamente si hay rawData
   const precios = useMemo(() => {
@@ -141,7 +144,7 @@ export function MotoCard({ moto, index, rawData }: MotoCardProps) {
             <button
               onClick={(e) => {
                 e.preventDefault();
-                setSelectedYear('2026');
+                setManualYear('2026');
               }}
               className={cn(
                 "flex-1 px-3 py-1.5 text-xs font-semibold rounded-md transition-all",
@@ -155,7 +158,7 @@ export function MotoCard({ moto, index, rawData }: MotoCardProps) {
             <button
               onClick={(e) => {
                 e.preventDefault();
-                setSelectedYear('2027');
+                setManualYear('2027');
               }}
               className={cn(
                 "flex-1 px-3 py-1.5 text-xs font-semibold rounded-md transition-all",
