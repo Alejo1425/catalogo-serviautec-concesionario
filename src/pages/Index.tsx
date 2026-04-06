@@ -9,7 +9,7 @@ import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { RefreshCw, AlertCircle } from "lucide-react";
 import { useMotos } from "@/hooks/useMotos";
 import { MotoService } from "@/services/nocodb";
-import type { MotoLegacy } from "@/types";
+import type { MotoLegacy, MotoNocoDB } from "@/types";
 
 const Index = () => {
   const [searchQuery, setSearchQuery] = useState("");
@@ -34,6 +34,14 @@ const Index = () => {
   const motos: MotoLegacy[] = useMemo(() => {
     if (!motosNocoDB) return [];
     return MotoService.toLegacyFormatList(motosNocoDB);
+  }, [motosNocoDB]);
+
+  // Mapa id-legacy → registro NocoDB para lookup O(1) en cada MotoCard
+  const nocoDBByLegacyId = useMemo(() => {
+    if (!motosNocoDB) return new Map<string, MotoNocoDB>();
+    const map = new Map<string, MotoNocoDB>();
+    motosNocoDB.forEach(m => map.set(MotoService.toLegacyFormat(m).id, m));
+    return map;
   }, [motosNocoDB]);
 
   // Filtrar motos
@@ -138,7 +146,7 @@ const Index = () => {
           {filteredMotos.length > 0 ? (
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
               {filteredMotos.map((moto, index) => (
-                <MotoCard key={moto.id} moto={moto} index={index} />
+                <MotoCard key={moto.id} moto={moto} index={index} rawData={nocoDBByLegacyId.get(moto.id)} />
               ))}
             </div>
           ) : (
