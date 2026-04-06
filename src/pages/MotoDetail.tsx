@@ -95,6 +95,11 @@ const MotoDetail = () => {
   // Determinar si hay precio 2027 disponible
   const hasPrecio2027 = motoNocoDB ? tienePrecio2027(motoNocoDB) : false;
 
+  // Apache RTR 160 CARB ABS conserva selector de años (2026 y 2027)
+  const isApache160Carb = motoNocoDB
+    ? (motoNocoDB.Productos_motos || '').toUpperCase().includes('RTR 160 CARB')
+    : false;
+
   // Estado del año seleccionado (2027 por defecto si está disponible)
   const [selectedYear, setSelectedYear] = useState<YearOption>(hasPrecio2027 ? '2027' : '2026');
 
@@ -342,8 +347,8 @@ const MotoDetail = () => {
                     Precios
                   </h2>
 
-                  {/* Selector de Año - Solo mostrar si hay precio 2027 */}
-                  {hasPrecio2027 && (
+                  {/* Selector de Año - Solo para Apache RTR 160 CARB ABS (tiene ambos años) */}
+                  {hasPrecio2027 && isApache160Carb && (
                     <div className="flex items-center gap-1 p-1 bg-muted/50 rounded-lg">
                       <button
                         onClick={() => setSelectedYear('2026')}
@@ -382,7 +387,7 @@ const MotoDetail = () => {
                   {preciosDinamicos?.inicial && (
                     <div className="flex justify-between items-center py-3 border-b border-border/50">
                       <div className="flex items-center gap-2">
-                        <span className="text-muted-foreground font-body">Cuota Inicial:</span>
+                        <span className="text-muted-foreground font-body">Inicial (Sujeta a perfil):</span>
                         <Badge
                           variant="secondary"
                           className={cn(

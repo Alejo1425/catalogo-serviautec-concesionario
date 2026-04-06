@@ -49,6 +49,11 @@ export function MotoCard({ moto, index, rawData }: MotoCardProps) {
   // Determinar si hay precio 2027 disponible
   const hasPrecio2027 = rawData ? tienePrecio2027(rawData) : false;
 
+  // Apache RTR 160 CARB ABS conserva selector de años (2026 y 2027)
+  const isApache160Carb = rawData
+    ? (rawData.Productos_motos || '').toUpperCase().includes('RTR 160 CARB')
+    : false;
+
   // Estado del año seleccionado (2027 por defecto si está disponible)
   const [selectedYear, setSelectedYear] = useState<YearOption>(hasPrecio2027 ? '2027' : '2026');
 
@@ -130,8 +135,8 @@ export function MotoCard({ moto, index, rawData }: MotoCardProps) {
           {moto.modelo}
         </h3>
 
-        {/* Selector de Año - Solo mostrar si hay precio 2027 */}
-        {rawData && hasPrecio2027 && (
+        {/* Selector de Año - Solo para Apache RTR 160 CARB ABS (tiene ambos años) */}
+        {rawData && hasPrecio2027 && isApache160Carb && (
           <div className="flex items-center gap-1 mb-3 p-1 bg-muted/50 rounded-lg">
             <button
               onClick={(e) => {
@@ -174,7 +179,7 @@ export function MotoCard({ moto, index, rawData }: MotoCardProps) {
         <div className={cn("space-y-3", !precios.disponible && "opacity-50")}>
           <div className="flex justify-between items-center py-2 border-b border-border/50">
             <div className="flex items-center gap-1.5">
-              <span className="text-sm text-muted-foreground font-body">Cuota Inicial:</span>
+              <span className="text-sm text-muted-foreground font-body">Inicial (Sujeta a perfil):</span>
               <Badge
                 variant="secondary"
                 className={cn(
