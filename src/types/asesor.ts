@@ -182,8 +182,6 @@ export function getNombreAsesor(asesor: Asesor): string {
  * ```typescript
  * // Obtener un asesor
  * const asesor: Asesor = await getAsesor('alejandra');
- * console.log(asesor.Asesor); // ✅ TypeScript sabe que existe
- * console.log(asesor.nombre); // ❌ Error: campo no existe
  *
  * // Crear un asesor nuevo
  * const nuevoAsesor: CrearAsesorDTO = {

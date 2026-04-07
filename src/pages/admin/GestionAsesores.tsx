@@ -97,7 +97,7 @@ export default function GestionAsesores() {
 
   // Filtrar asesores según el filtro seleccionado
   const asesoresFiltrados = asesores.filter(asesor => {
-    if (filtro === 'activos') return asesor.Activo === 1;
+    if (filtro === 'activos') return asesor.Activo  == 1;
     if (filtro === 'inactivos') return asesor.Activo === 0;
     if (filtro === 'retirados') return asesor.Activo === 2;
     return true; // 'todos'
@@ -111,7 +111,7 @@ export default function GestionAsesores() {
   };
 
   // Estadísticas
-  const asesoresActivos = asesores.filter(a => a.Activo === 1).length;
+  const asesoresActivos = asesores.filter(a => a.Activo  == 1).length;
   const asesoresInactivos = asesores.filter(a => a.Activo === 0).length;
   const asesoresRetirados = asesores.filter(a => a.Activo === 2).length;
 
@@ -308,7 +308,7 @@ export default function GestionAsesores() {
                         </span>
                       </div>
                       {/* URL del catálogo si el asesor tiene slug y está activo */}
-                      {asesor.slug && asesor.Activo === 1 && (
+                      {asesor.slug && asesor.Activo  == 1 && (
                         <div className="mt-2 flex items-center gap-2">
                           <a
                             href={`${appConfig.url}/${asesor.slug}`}
@@ -334,7 +334,7 @@ export default function GestionAsesores() {
 
                   {/* Botones de acción */}
                   <div className="flex-shrink-0 flex gap-2">
-                    {asesor.Activo === 1 && (
+                    {asesor.Activo  == 1 && (
                       <>
                         <Button
                           onClick={() => handleDesactivar(asesor.Id, asesor.Asesor)}

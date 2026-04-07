@@ -136,12 +136,12 @@ function DetallesAsesor() {
               <div className="mt-1">
                 <span
                   className={`inline-block px-3 py-1 rounded-full text-sm font-medium ${
-                    asesorActual!.Activo === 1
+                    asesorActual!.Activo  == 1
                       ? 'bg-green-100 text-green-800'
                       : 'bg-gray-100 text-gray-800'
                   }`}
                 >
-                  {asesorActual!.Activo === 1 ? '✓ Activo' : '○ Inactivo'}
+                  {asesorActual!.Activo  == 1 ? '✓ Activo' : '○ Inactivo'}
                 </span>
               </div>
             </div>
@@ -286,7 +286,7 @@ function GestionarAsesores() {
       <CardContent>
         <div className="space-y-3">
           {asesores.map((asesor) => {
-            const estaActivo = asesor.Activo === 1;
+            const estaActivo = asesor.Activo  == 1;
             const estaProcesando = procesando === asesor.Id;
 
             return (
@@ -388,7 +388,6 @@ export default function TestContext() {
   useEffect(() => {
     if (isLoaded && asesorActual) {
       setAsesor(asesorActual.Asesor, asesorActual.Id);
-      console.log(`✅ Chatwoot configurado para: ${asesorActual.Asesor}`);
     }
   }, [isLoaded, asesorActual, setAsesor]);
 

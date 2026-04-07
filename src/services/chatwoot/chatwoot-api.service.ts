@@ -73,10 +73,8 @@ export class ChatwootAPIService {
   static async buscarConversacionActiva(): Promise<number | null> {
     try {
       // Debug: Ver todas las keys de localStorage que empiezan con 'chatwoot' o 'cw'
-      console.log('🔍 Buscando conversación en localStorage...');
       const allKeys = Object.keys(localStorage);
       const chatwootKeys = allKeys.filter(k => k.toLowerCase().includes('chatwoot') || k.toLowerCase().includes('cw'));
-      console.log('📋 Keys de Chatwoot encontradas:', chatwootKeys);
 
       // Intentar diferentes posibles keys
       const possibleKeys = [
@@ -89,26 +87,20 @@ export class ChatwootAPIService {
       for (const key of possibleKeys) {
         const data = localStorage.getItem(key);
         if (data) {
-          console.log(`📝 Datos encontrados en ${key}:`, data.substring(0, 100));
           try {
             const parsed = JSON.parse(data);
-            console.log(`🔍 Estructura del objeto ${key}:`, Object.keys(parsed));
 
             // Buscar conversationId en diferentes posibles estructuras
             if (parsed.id) {
-              console.log(`✅ Conversación encontrada: ${parsed.id}`);
               return parsed.id;
             }
             if (parsed.conversationId) {
-              console.log(`✅ Conversación encontrada: ${parsed.conversationId}`);
               return parsed.conversationId;
             }
             if (parsed.conversation?.id) {
-              console.log(`✅ Conversación encontrada: ${parsed.conversation.id}`);
               return parsed.conversation.id;
             }
           } catch (e) {
-            console.log(`⚠️ No se pudo parsear ${key}`);
           }
         }
       }
@@ -146,7 +138,6 @@ export class ChatwootAPIService {
         throw new Error(`Error al enviar mensaje: ${response.status}`);
       }
 
-      console.log(`✅ Mensaje enviado a conversación ${conversationId}`);
     } catch (error) {
       console.error('❌ Error al enviar mensaje:', error);
       throw error;
@@ -199,13 +190,10 @@ export class ChatwootAPIService {
         return;
       }
 
-      console.log(`🔄 Mapeando asesor NocoDB ${asesorNocodbId} → Chatwoot ${chatwootUserId}`);
 
       // Método 1: Intentar con PATCH (actualizar conversación)
       const urlPatch = `${this.baseUrl}/api/v1/accounts/${this.accountId}/conversations/${conversationId}`;
 
-      console.log(`📡 URL de asignación: ${urlPatch}`);
-      console.log(`📋 Payload:`, { assignee_id: chatwootUserId });
 
       const response = await fetch(urlPatch, {
         method: 'PATCH',
@@ -216,14 +204,11 @@ export class ChatwootAPIService {
       });
 
       const responseText = await response.text();
-      console.log(`📨 Response status: ${response.status}`);
-      console.log(`📨 Response body:`, responseText);
 
       if (!response.ok) {
         throw new Error(`Error al asignar conversación: ${response.status} - ${responseText}`);
       }
 
-      console.log(`✅ Conversación ${conversationId} asignada al asesor Chatwoot ${chatwootUserId} (NocoDB ${asesorNocodbId})`);
     } catch (error) {
       console.error('❌ Error al asignar conversación:', error);
       if (error instanceof Error) {
@@ -240,11 +225,9 @@ export class ChatwootAPIService {
     for (let i = 0; i < maxIntentos; i++) {
       const conversationId = await this.buscarConversacionActiva();
       if (conversationId) {
-        console.log(`✅ Conversación encontrada en intento ${i + 1}`);
         return conversationId;
       }
 
-      console.log(`⏳ Esperando conversación... intento ${i + 1}/${maxIntentos}`);
       // Esperar 500ms antes del siguiente intento
       await new Promise(resolve => setTimeout(resolve, 500));
     }
@@ -262,8 +245,6 @@ export class ChatwootAPIService {
     asesorId: number
   ): Promise<boolean> {
     try {
-      console.log(`📤 Iniciando envío de moto: ${moto.marca} ${moto.modelo}`);
-      console.log(`👤 Asesor ID: ${asesorId}`);
 
       // 1. Esperar a que la conversación se cree (máximo 5 segundos)
       const conversationId = await this.esperarConversacion(10);
@@ -273,21 +254,16 @@ export class ChatwootAPIService {
         return false;
       }
 
-      console.log(`💬 Usando conversación ID: ${conversationId}`);
 
       // 2. Crear el mensaje con los detalles de la moto
       const mensaje = this.crearMensajeMoto(moto);
-      console.log(`📝 Mensaje creado:`, mensaje.substring(0, 100) + '...');
 
       // 3. Enviar el mensaje
-      console.log(`📨 Enviando mensaje...`);
       await this.enviarMensaje(conversationId, mensaje);
 
       // 4. Asignar la conversación al asesor
-      console.log(`👥 Asignando conversación al asesor ${asesorId}...`);
       await this.asignarConversacionAsesor(conversationId, asesorId);
 
-      console.log(`✅ Moto ${moto.marca} ${moto.modelo} enviada y conversación asignada`);
       return true;
     } catch (error) {
       console.error('❌ Error al enviar moto de interés:', error);
@@ -319,7 +295,6 @@ export class ChatwootAPIService {
         throw new Error(`Error al actualizar custom attributes: ${response.status}`);
       }
 
-      console.log(`✅ Custom attributes actualizados en conversación ${conversationId}`);
     } catch (error) {
       console.error('❌ Error al actualizar custom attributes:', error);
       throw error;

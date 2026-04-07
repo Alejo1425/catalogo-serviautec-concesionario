@@ -42,9 +42,22 @@ const Index = () => {
   const syncMotos = useSincronizarMotos();
 
   // Convertir motos de NocoDB a formato legacy para compatibilidad con MotoCard
-  const motos: MotoLegacy[] = useMemo(() => {
-    if (!motosNocoDB) return [];
-    return MotoService.toLegacyFormatList(motosNocoDB);
+  // Mantenemos también un mapeo a los datos raw para cálculos dinámicos
+  const { motos, rawDataMap } = useMemo(() => {
+    if (!motosNocoDB) return { motos: [], rawDataMap: new Map<string, MotoNocoDB>() };
+
+    const legacyMotos = MotoService.toLegacyFormatList(motosNocoDB);
+    const dataMap = new Map<string, MotoNocoDB>();
+
+    // Crear mapeo de ID legacy a datos raw
+    motosNocoDB.forEach(motoRaw => {
+      const legacyMoto = MotoService.toLegacyFormat(motoRaw);
+      if (legacyMoto?.id) {
+        dataMap.set(legacyMoto.id, motoRaw);
+      }
+    });
+
+    return { motos: legacyMotos, rawDataMap: dataMap };
   }, [motosNocoDB]);
 
   // Filtrar motos
@@ -134,7 +147,7 @@ const Index = () => {
           <div className="flex justify-between items-center mb-6">
             <h3 className="font-heading font-bold text-2xl text-foreground">
               {filteredMotos.length}{" "}
-              {filteredMotos.length === 1 ? "moto encontrada" : "motos encontradas"}
+              {filteredMotos.length  == 1 ? "moto encontrada" : "motos encontradas"}
             </h3>
 
             {/* Botón de sincronización manual */}
@@ -164,7 +177,12 @@ const Index = () => {
           {filteredMotos.length > 0 ? (
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
               {filteredMotos.map((moto, index) => (
-                <MotoCard key={moto.id} moto={moto} index={index} />
+                <MotoCard
+                  key={moto.id}
+                  moto={moto}
+                  index={index}
+                  rawData={rawDataMap.get(moto.id)}
+                />
               ))}
             </div>
           ) : (

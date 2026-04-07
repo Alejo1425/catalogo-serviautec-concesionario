@@ -23,7 +23,6 @@ const STORAGE_KEY = 'chatwoot_conversation_id';
  *   const { conversationId, clearConversationId } = useConversationId();
  *
  *   if (conversationId) {
- *     console.log('Usuario vino de conversación:', conversationId);
  *   }
  *
  *   return <div>...</div>;
@@ -43,7 +42,6 @@ export function useConversationId() {
       const cid = parseInt(cidParam, 10);
 
       if (!isNaN(cid) && cid > 0) {
-        console.log(`📌 Conversación detectada desde URL: ${cid}`);
         // Guardar en localStorage
         localStorage.setItem(STORAGE_KEY, cid.toString());
         setConversationId(cid);
@@ -58,7 +56,6 @@ export function useConversationId() {
     if (stored) {
       const cid = parseInt(stored, 10);
       if (!isNaN(cid) && cid > 0) {
-        console.log(`📌 Conversación recuperada de localStorage: ${cid}`);
         setConversationId(cid);
       }
     } else {
@@ -73,7 +70,6 @@ export function useConversationId() {
   const clearConversationId = () => {
     localStorage.removeItem(STORAGE_KEY);
     setConversationId(null);
-    console.log('🗑️ ID de conversación limpiado');
   };
 
   /**
@@ -83,7 +79,6 @@ export function useConversationId() {
     if (cid > 0) {
       localStorage.setItem(STORAGE_KEY, cid.toString());
       setConversationId(cid);
-      console.log(`📌 ID de conversación establecido manualmente: ${cid}`);
     }
   };
 

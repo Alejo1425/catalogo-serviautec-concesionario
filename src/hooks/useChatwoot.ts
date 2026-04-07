@@ -161,6 +161,7 @@ export function useChatwoot(options: UseChatwootOptions) {
       cuotaInicial?: number;
       precioContado?: number;
       precio2026?: number;
+      year?: string;
     }
   ) => {
     if (!isLoaded) {

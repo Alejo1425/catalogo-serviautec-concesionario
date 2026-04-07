@@ -418,8 +418,8 @@ export class MotoService {
    */
   static async getEstadisticas() {
     const todasLasMotos = await this.getAll({ soloActivas: false });
-    const motosActivas = todasLasMotos.filter(m => m.Activo === 1);
-    const motosInactivas = todasLasMotos.filter(m => m.Activo !== 1);
+    const motosActivas = todasLasMotos.filter(m => m.Activo  == 1);
+    const motosInactivas = todasLasMotos.filter(m => m.Activo  != 1);
 
     // Agrupar por marca
     const porMarca = todasLasMotos.reduce((acc, moto) => {

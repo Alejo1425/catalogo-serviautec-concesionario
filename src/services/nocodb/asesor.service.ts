@@ -85,7 +85,6 @@ export class AsesorService {
    * ```ts
    * const asesor = await AsesorService.getBySlug('alejandra');
    * if (asesor) {
-   *   console.log(asesor.Asesor); // "Alejandra"
    * }
    * ```
    */
@@ -384,7 +383,7 @@ export class AsesorService {
       a => a.Asesor.toLowerCase().includes(cleanId.toLowerCase())
     );
 
-    if (partialMatches.length === 1) {
+    if (partialMatches.length  == 1) {
       return partialMatches[0];
     }
 
@@ -394,7 +393,7 @@ export class AsesorService {
       const startMatches = partialMatches.filter(
         a => a.Asesor.toLowerCase().startsWith(cleanId.toLowerCase())
       );
-      if (startMatches.length === 1) {
+      if (startMatches.length  == 1) {
         return startMatches[0];
       }
     }
